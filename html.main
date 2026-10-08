@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de TI - Conhecimentos Gerais</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header-acessibilidade">
+        <button id="btnAcessibilidade" title="Ativar/Desativar Alto Contraste">(Imagem do icone) Acessibilidade</button>
+    </header>
+
+    <main class="container">
+        <!-- Seleção de Modo -->
+        <div id="inicio-container">
+            <h1>Quiz: Conhecimentos Gerais em TI 💻</h1>
+            <p>Escolha a dificuldade para começar:</p>
+            <div class="botoes-modo">
+                <button class="btn-modo" data-modo="facil">Modo Fácil</button>
+                <button class="btn-modo" data-modo="normal">Modo Normal</button>
+                <button class="btn-modo" data-modo="dificil">Modo Difícil (Até desse eu tenho medo)</button>
+            </div>
+        </div>
+
+        <!-- Área Principal do Quiz -->
+        <div id="quiz-container" style="display: none;">
+            
+            <div class="pergunta-header">
+                <!-- Timer no canto esquerdo -->
+                <div id="timer-display" style="display: none;">⏱️ <span id="tempo">01:50</span></div>
+                
+                <h2 id="question">Título da Pergunta</h2>
+                
+                <!-- Botão de dica no canto direito -->
+                <button id="btnDica" class="icon-btn" title="Ver dica">❓</button>
+            </div>
+            
+            <p id="textoDica" style="display: none;"></p>
+
+            <div class="alternativas-container">
+                <button class="alternativa" id="alternative1"></button>
+                <button class="alternativa" id="alternative2"></button>
+                <button class="alternativa" id="alternative3"></button>
+                <button class="alternativa" id="alternative4"></button>
+            </div>
+
+            <div id="areaExplicacao" style="display: none;">
+                <h3 id="tituloResultado"></h3>
+                <p id="textoExplicacao"></p>
+            </div>
+
+            <button id="btnProxima" style="display: none;">Próxima Pergunta ➔</button>
+        </div>
+
+        <!-- Tela Final -->
+        <div id="final" style="display: none;">
+            <h1>Quiz finalizado! 🏆</h1>
+            <h2 id="finalScore">Sua pontuação: </h2>
+            <p id="mensagemFinal"></p>
+            <img id="emojiFinal" src="" alt="Emoji de resultado" />
+            <button id="btnReiniciar" style="margin-top: 20px;">Voltar ao Início</button>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
