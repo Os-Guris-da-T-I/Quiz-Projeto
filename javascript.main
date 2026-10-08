@@ -1,0 +1,327 @@
+Codigo Inicial:
+
+// ==========================================
+// 1. BANCO DE DADOS (15 Perguntas de TI)
+// ==========================================
+const perguntas = [
+    {
+        pergunta: "O que é Python?",
+        alternativas: ["Um tipo de hardware", "Uma linguagem de programação", "Um sistema operacional", "Um editor de imagens"],
+        respostaCorreta: 1,
+        dica: "É frequentemente associada a uma cobra, mas não morde!",
+        explicacaoCorreta: "Exato! Python é uma linguagem de programação de alto nível, famosa por sua sintaxe simples.",
+        explicacaoErrada: "Erro. Python não é hardware ou sistema, mas sim uma linguagem de programação muito popular."
+    },
+    {
+        pergunta: "Quais linguagens são muito utilizadas no desenvolvimento de jogos de grande porte (AAA)?",
+        alternativas: ["HTML e CSS", "PHP e Ruby", "C++ e C#", "Python e Scratch"],
+        respostaCorreta: 2,
+        dica: "São linguagens da família 'C', conhecidas pela altíssima performance.",
+        explicacaoCorreta: "Muito bem! C++ é amplamente usada em engines como Unreal, e C# é a linguagem principal da Unity.",
+        explicacaoErrada: "Incorreto. Jogos pesados exigem alta performance, sendo C++ e C# as mais utilizadas."
+    },
+    {
+        pergunta: "O que significa a sigla HTML?",
+        alternativas: ["HyperText Markup Language", "Hyperlinks and Text Markup Language", "Home Tool Markup Language", "Hyper Tool Multi Language"],
+        respostaCorreta: 0,
+        dica: "É uma linguagem de 'Marcação' de 'Hipertexto'.",
+        explicacaoCorreta: "Correto! HTML significa HyperText Markup Language, a linguagem base para estruturar páginas na web.",
+        explicacaoErrada: "Você errou. A sigla correta é HyperText Markup Language."
+    },
+    {
+        pergunta: "Na área de TI, o que é um 'Bug'?",
+        alternativas: ["Um vírus perigoso", "Uma peça do computador", "Uma linguagem de programação", "Uma falha ou erro no código"],
+        respostaCorreta: 3,
+        dica: "O termo surgiu quando um inseto real entrou em um computador antigo.",
+        explicacaoCorreta: "Isso aí! Um bug é um erro lógico ou falha no código que faz o programa não funcionar como deveria.",
+        explicacaoErrada: "Errado. Um bug não é um vírus físico, é simplesmente um erro no código de um software."
+    },
+    {
+        pergunta: "Para que serve a linguagem SQL?",
+        alternativas: ["Criar interfaces gráficas", "Gerenciar bancos de dados relacionais", "Desenvolver jogos 3D", "Estilizar páginas web"],
+        respostaCorreta: 1,
+        dica: "Pense em tabelas, linhas e colunas de informação.",
+        explicacaoCorreta: "Certíssimo! SQL é a linguagem padrão para interagir e gerenciar Bancos de Dados relacionais.",
+        explicacaoErrada: "Incorreto. SQL é usada especificamente para consultar e manipular Bancos de Dados."
+    },
+    {
+        pergunta: "O que é o Git?",
+        alternativas: ["Um editor de código", "Um tipo de banco de dados", "Um sistema de controle de versão", "Uma rede social para programadores"],
+        respostaCorreta: 2,
+        dica: "Ele te salva quando você apaga um código importante e precisa voltar no tempo.",
+        explicacaoCorreta: "Boa! O Git é um sistema de controle de versão que mapeia todas as alterações feitas no código.",
+        explicacaoErrada: "Errou. Git é um sistema de controle de versão de código."
+    },
+    {
+        pergunta: "Qual a principal diferença entre Front-end e Back-end?",
+        alternativas: ["Front-end é hardware, Back-end é software", "Não há diferença no mercado", "Front-end é o servidor, Back-end é o cliente", "Front-end é a interface visual, Back-end é a lógica do servidor"],
+        respostaCorreta: 3,
+        dica: "Front (Frente/Visível) e Back (Trás/Invisível para o usuário).",
+        explicacaoCorreta: "Perfeito! Front-end é o que o usuário vê. Back-end é o que roda por trás (servidor, banco de dados).",
+        explicacaoErrada: "Incorreto. O Front-end cuida da parte visual, enquanto o Back-end cuida da lógica no servidor."
+    },
+    {
+        pergunta: "O que faz o CSS em uma página web?",
+        alternativas: ["Adiciona lógica e interatividade", "Controla a apresentação visual e o estilo", "Cria a estrutura da página", "Conecta o site ao banco de dados"],
+        respostaCorreta: 1,
+        dica: "Ele é responsável pelas cores, fontes e layout.",
+        explicacaoCorreta: "Correto! O CSS serve para estilizar o HTML, dando cor e formato ao site.",
+        explicacaoErrada: "Errou. O CSS não adiciona lógica nem cria estrutura. Ele cuida apenas do estilo visual."
+    },
+    {
+        pergunta: "O que é uma 'variável' na programação?",
+        alternativas: ["Um erro no código", "Um comando de repetição", "Um espaço na memória para armazenar dados", "Uma função matemática complexa"],
+        respostaCorreta: 2,
+        dica: "Pense nela como uma 'caixa' com uma etiqueta onde você guarda um valor.",
+        explicacaoCorreta: "Isso! Uma variável é um espaço na memória do computador usado para guardar dados que podem mudar.",
+        explicacaoErrada: "Incorreto. Uma variável atua como uma 'caixa' na memória para salvar informações temporárias."
+    },
+    {
+        pergunta: "Qual é a função da memória RAM em um computador?",
+        alternativas: ["Armazenar dados temporários para acesso rápido", "Armazenar arquivos permanentemente", "Resfriar a placa-mãe", "Processar gráficos de jogos"],
+        respostaCorreta: 0,
+        dica: "Se o computador desligar, tudo que está nela é apagado (é volátil).",
+        explicacaoCorreta: "Exatamente! A RAM armazena informações temporárias que o processador precisa acessar imediatamente.",
+        explicacaoErrada: "Errado. A RAM é memória de curto prazo. Quem armazena permanentemente é o HD ou SSD."
+    },
+    {
+        pergunta: "O que é um Algoritmo?",
+        alternativas: ["Uma sequência de passos lógicos para resolver um problema", "Uma peça de hardware da CPU", "Uma linguagem de programação", "Um vírus de computador"],
+        respostaCorreta: 0,
+        dica: "Pense em uma receita de bolo passo a passo.",
+        explicacaoCorreta: "Correto! Um algoritmo é basicamente uma receita, um passo a passo estruturado usado para chegar a um resultado.",
+        explicacaoErrada: "Você errou. Um algoritmo não é físico, é a sequência de passos criada para resolver um problema."
+    },
+    {
+        pergunta: "O que caracteriza um software 'Open-source' (Código Aberto)?",
+        alternativas: ["É sempre gratuito e sem regras", "É desenvolvido por uma única empresa", "Seu código-fonte está disponível para ser modificado", "Funciona apenas em navegadores"],
+        respostaCorreta: 2,
+        dica: "A comunidade de programadores pode ver o código e ajudar a melhorá-lo.",
+        explicacaoCorreta: "Muito bem! O software de código aberto permite que qualquer pessoa veja e modifique o seu código fonte.",
+        explicacaoErrada: "Incorreto. Open-source significa que o código do sistema está público para a comunidade."
+    },
+    {
+        pergunta: "Qual dessas é uma das Engines (motores) de jogos mais populares do mundo?",
+        alternativas: ["Photoshop", "Unity", "Excel", "Visual Studio"],
+        respostaCorreta: 1,
+        dica: "Começa com a letra U e também tem um C# por trás.",
+        explicacaoCorreta: "Acertou! Unity é um dos motores de jogos mais famosos do mundo para PC, consoles e mobile.",
+        explicacaoErrada: "Errou. Dentre as opções, a Unity é a engine (motor gráfico) utilizada para criar jogos."
+    },
+    {
+        pergunta: "Na lógica de programação, o que é um dado do tipo 'Booleano' (Boolean)?",
+        alternativas: ["Um texto longo", "Um número decimal", "Uma lista de itens", "Um valor que só pode ser Verdadeiro ou Falso"],
+        respostaCorreta: 3,
+        dica: "É como um interruptor de luz: só tem dois estados.",
+        explicacaoCorreta: "Exato! Um tipo Booleano trabalha apenas com duas opções lógicas: Verdadeiro (True) ou Falso (False).",
+        explicacaoErrada: "Incorreto. Variáveis booleanas são binárias, elas só aceitam Verdadeiro ou Falso."
+    },
+    {
+        pergunta: "Quem é frequentemente considerado o 'Pai da Computação'?",
+        alternativas: ["Alan Turing", "Bill Gates", "Steve Jobs", "Mark Zuckerberg"],
+        respostaCorreta: 0,
+        dica: "Ele quebrou o código da máquina Enigma na Segunda Guerra Mundial.",
+        explicacaoCorreta: "Correto! Alan Turing foi um matemático brilhante que criou a base teórica de como os computadores funcionam hoje.",
+        explicacaoErrada: "Errou. Bill Gates e Steve Jobs popularizaram os PCs, mas o pioneiro teórico foi Alan Turing."
+    }
+];
+
+// ==========================================
+// 2. MAPEAMENTO DOS ELEMENTOS HTML
+// ==========================================
+const inicioContainer = document.getElementById("inicio-container");
+const quizContainer = document.getElementById("quiz-container");
+const questionTitle = document.getElementById("question");
+const btnDica = document.getElementById("btnDica");
+const textoDica = document.getElementById("textoDica");
+const areaExplicacao = document.getElementById("areaExplicacao");
+const tituloResultado = document.getElementById("tituloResultado");
+const textoExplicacao = document.getElementById("textoExplicacao");
+const btnProxima = document.getElementById("btnProxima");
+const timerDisplay = document.getElementById("timer-display");
+const spanTempo = document.getElementById("tempo");
+const finalScreen = document.getElementById("final");
+const finalScore = document.getElementById("finalScore");
+const btnReiniciar = document.getElementById("btnReiniciar");
+const btnAcessibilidade = document.getElementById("btnAcessibilidade");
+
+const btnAlternativas = [
+    document.getElementById("alternative1"),
+    document.getElementById("alternative2"),
+    document.getElementById("alternative3"),
+    document.getElementById("alternative4")
+];
+
+// ==========================================
+// 3. VARIAVEIS DE ESTADO DO JOGO
+// ==========================================
+let indiceAtual = 0;
+let pontuacao = 0;
+let modoAtual = "normal";
+let timer;
+let tempoRestante;
+
+// ==========================================
+// 4. LÓGICA BASE DO QUIZ (Minha Parte)
+// ==========================================
+
+function carregarPergunta() {
+    clearInterval(timer); // Pausa o relógio se tiver
+    const dados = perguntas[indiceAtual];
+    
+    questionTitle.innerText = `(${indiceAtual + 1}/${perguntas.length}) ${dados.pergunta}`;
+    textoDica.innerText = "💡 Dica: " + dados.dica;
+    
+    areaExplicacao.style.display = "none";
+    btnProxima.style.display = "none";
+
+    // Mostra ou esconde coisas dependendo do modo que o cara escolheu
+    if (modoAtual === "facil") {
+        textoDica.style.display = "block";
+        btnDica.style.display = "none"; 
+        timerDisplay.style.display = "none"; 
+    } else if (modoAtual === "normal") {
+        textoDica.style.display = "none"; 
+        btnDica.style.display = "block"; 
+        timerDisplay.style.display = "none"; 
+    } else if (modoAtual === "dificil") {
+        textoDica.style.display = "none"; 
+        btnDica.style.display = "none"; 
+        timerDisplay.style.display = "block"; 
+        iniciarTimer(110); // Chama a função de timer que você vai criar ali embaixo!
+    }
+
+    // Preenche as alternativas
+    btnAlternativas.forEach((btn, index) => {
+        btn.innerText = dados.alternativas[index];
+        btn.disabled = false; 
+        btn.classList.remove("correta", "errada"); 
+        btn.onclick = () => verificarResposta(index);
+    });
+}
+
+function verificarResposta(indiceEscolhido) {
+    clearInterval(timer); 
+    const dados = perguntas[indiceAtual];
+    const correta = dados.respostaCorreta;
+
+    btnAlternativas.forEach(btn => btn.disabled = true);
+
+    if (indiceEscolhido === -1) {
+        // Estourou o tempo
+        tituloResultado.innerText = "⏰ O tempo acabou!";
+        tituloResultado.style.color = "#dc3545"; 
+        textoExplicacao.innerText = "Você demorou muito. A resposta correta era: " + dados.alternativas[correta];
+        btnAlternativas[correta].classList.add("correta"); 
+    } else if (indiceEscolhido === correta) {
+        // Acertou
+        btnAlternativas[indiceEscolhido].classList.add("correta"); 
+        pontuacao++;
+        tituloResultado.innerText = "🎉 Resposta Correta!";
+        tituloResultado.style.color = "#28a745"; 
+        textoExplicacao.innerText = dados.explicacaoCorreta;
+    } else {
+        // Errou
+        btnAlternativas[indiceEscolhido].classList.add("errada"); 
+        btnAlternativas[correta].classList.add("correta"); 
+        tituloResultado.innerText = "❌ Resposta Incorreta!";
+        tituloResultado.style.color = "#dc3545"; 
+        textoExplicacao.innerText = dados.explicacaoErrada;
+    }
+
+    areaExplicacao.style.display = "block";
+    btnProxima.style.display = "inline-block";
+}
+
+function finalizarQuiz() {
+    quizContainer.style.display = "none";
+    finalScreen.style.display = "block"; 
+    finalScore.innerText = `Você acertou ${pontuacao} de ${perguntas.length} questões!`;
+}
+
+
+/* ======================================================================
+   5. Decidindo os Modos de Jogo
+   ====================================================================== */
+
+// TAREFA 1: Escolher as classes (Modos de Jogo)
+const btnModos = document.querySelectorAll(".btn-modo"); 
+
+btnModos.forEach(btn => {
+    btn.addEventListener("click", () => {
+        const modoEscolhido = btn.dataset.modo; // "facil" | "normal" | "dificil"
+ 
+        if (!modoEscolhido) {
+            console.warn("O botão de modo precisa de um atributo data-modo no HTML.");
+            return;
+        }
+ 
+        modoAtual = modoEscolhido;
+        indiceAtual = 0;
+        pontuacao = 0;
+ 
+        inicioContainer.style.display = "none";
+        quizContainer.style.display = "block";
+ 
+        carregarPergunta();
+    });
+});
+
+// TAREFA 2: A seta para pular para a próxima pergunta
+btnProxima.addEventListener("click", () => {
+    indiceAtual++;
+ 
+    if (indiceAtual < perguntas.length) {
+        carregarPergunta();
+    } else {
+        finalizarQuiz();
+    }
+});
+
+// TAREFA 3: Botão de dica e Botão de acessibilidade
+ 
+// Botão de dica (só aparece no modo normal)
+btnDica.addEventListener("click", () => {
+    const visivel = textoDica.style.display === "block";
+    textoDica.style.display = visivel ? "none" : "block";
+});
+ 
+// Botão de acessibilidade: fonte maior, alto contraste e navegação por teclado
+// Precisa que o CSS defina a classe ".modo-acessivel"
+btnAcessibilidade.addEventListener("click", () => {
+    acessibilidadeAtiva = !acessibilidadeAtiva;
+    document.body.classList.toggle("modo-acessivel", acessibilidadeAtiva);
+ 
+    btnAcessibilidade.setAttribute("aria-pressed", acessibilidadeAtiva);
+    btnAcessibilidade.innerText = acessibilidadeAtiva
+        ? "🔆 Desativar Acessibilidade"
+        : "♿ Ativar Acessibilidade";
+});
+
+// TAREFA 4: Lógica do Timer (1 minuto e 50 segundos no modo difícil)
+function iniciarTimer(segundos) {
+    tempoRestante = segundos;
+    atualizarDisplayTempo();
+ 
+    timer = setInterval(() => {
+        tempoRestante--;
+        atualizarDisplayTempo();
+ 
+        if (tempoRestante <= 0) {
+            clearInterval(timer);
+            verificarResposta(-1); // Estourou o tempo
+        }
+    }, 1000);
+}
+ 
+function atualizarDisplayTempo() {
+    const minutos = Math.floor(tempoRestante / 60);
+    const segundosRestantes = tempoRestante % 60;
+    spanTempo.innerText = `${minutos}:${segundosRestantes.toString().padStart(2, "0")}`;
+}
+
+// Botao de reiniciar
+btnReiniciar.addEventListener("click", () => {
+    location.reload(); 
+});
+ 
