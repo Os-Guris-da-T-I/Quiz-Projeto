@@ -15,24 +15,19 @@
 ##  ⎚ | Objetivo ✧
 
 ꩜ 𝑶 𝒏𝒐𝒔𝒔𝒐 𝒐𝒃𝒋𝒆𝒕𝒊𝒗𝒐 𝒑𝒓𝒊𝒏𝒄𝒊𝒑𝒂𝒍 𝒆𝒓𝒂 𝒄𝒓𝒊𝒂𝒓 𝒖𝒎 𝒒𝒖𝒊𝒛 𝒆𝒎 𝒒𝒖𝒆 𝒂 𝒑𝒆𝒔𝒔𝒐𝒂 𝒑𝒐𝒅𝒆𝒓𝒊𝒂 𝒓𝒆𝒔𝒑𝒐𝒏𝒅𝒆𝒓 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂𝒔 𝒔𝒐𝒃𝒓𝒆 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂 𝒆 𝒔𝒖𝒂𝒔 𝒓𝒆𝒔𝒑𝒆𝒄𝒕𝒊𝒗𝒂𝒔 𝒂́𝒓𝒆𝒂𝒔 𝒅𝒆 𝒊𝒏𝒕𝒆𝒓𝒆𝒔𝒔𝒆, 𝒑𝒂𝒓𝒂 𝒂𝒔𝒔𝒊𝒎 𝒄𝒐𝒏𝒉𝒆𝒄𝒆𝒓 𝒖𝒎 𝒑𝒐𝒖𝒄𝒐 𝒅𝒆 𝒄𝒂𝒅𝒂 𝒑𝒊𝒍𝒂𝒓 𝒅𝒂 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂 𝒅𝒂 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄̧𝒂̃𝒐, 𝒆 𝒂𝒔𝒔𝒊𝒎 𝒏𝒐 𝒇𝒊𝒏𝒂𝒍 𝒄𝒐𝒏𝒇𝒆𝒓𝒊𝒓 𝒔𝒆 𝒂𝒄𝒆𝒓𝒕𝒐𝒖 𝒂𝒔 𝒒𝒖𝒆𝒔𝒕𝒐̃𝒆𝒔 𝒂𝒑𝒓𝒆𝒔𝒆𝒏𝒕𝒂𝒅𝒂𝒔. 𝑵𝒐́𝒔 𝒑𝒆𝒏𝒔𝒂𝒎𝒐𝒔 𝒒𝒖𝒆 𝒇𝒂𝒛𝒆𝒏𝒅𝒐 𝒅𝒆𝒔𝒔𝒂 𝒇𝒐𝒓𝒎𝒂 𝒑𝒐𝒅𝒆𝒓𝒆𝒎𝒐𝒔 𝒂𝒋𝒖𝒅𝒂𝒓 𝒂𝒔 𝒑𝒆𝒔𝒔𝒐𝒂𝒔 𝒂 𝒄𝒐𝒏𝒉𝒆𝒄𝒆𝒓𝒆𝒎 𝒖𝒎 𝒑𝒐𝒖𝒄𝒐 𝒎𝒂𝒊𝒔 𝒔𝒐𝒃𝒓𝒆 𝑻.𝑰.
-## 🧠 Como o quiz funciona
 
-Na versão atual, o usuário pode escolher entre três níveis:
 
--   **Modo Fácil:** mostra a dica durante a pergunta.
--   **Modo Normal:** permite que o usuário veja uma dica quando quiser.
--   **Modo Difícil:** esconde a dica e inicia um cronômetro de 1 minuto
-    e 50 segundos para cada pergunta.
+## ⎚ | Como o quiz funciona? ☁︎︎
 
-O quiz possui 15 perguntas cadastradas no JavaScript. Os assuntos
-incluem linguagens de programação, HTML, CSS, SQL, Git, hardware,
-algoritmos, lógica de programação e desenvolvimento de jogos.
+𝑵𝒂 𝒗𝒆𝒓𝒔𝒂̃𝒐 𝒂𝒕𝒖𝒂𝒍, 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒑𝒐𝒅𝒆 𝒆𝒔𝒄𝒐𝒍𝒉𝒆𝒓 𝒆𝒏𝒕𝒓𝒆 𝒕𝒓𝒆̂𝒔 𝒏𝒊́𝒗𝒆𝒊𝒔:
 
-Quando o usuário escolhe uma alternativa, o sistema informa se a
-resposta está certa ou errada e apresenta uma explicação. No final, é
-exibida a quantidade de questões respondidas corretamente. Também existe
-um botão de acessibilidade planejado para ativar recursos como alto
-contraste e ajustes visuais.
+-   **Modo Fácil:** 𝒎𝒐𝒔𝒕𝒓𝒂 𝒂 𝒅𝒊𝒄𝒂 𝒅𝒖𝒓𝒂𝒏𝒕𝒆 𝒂 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂.
+-   **Modo Normal:** 𝒑𝒆𝒓𝒎𝒊𝒕𝒆 𝒒𝒖𝒆 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒗𝒆𝒋𝒂 𝒖𝒎𝒂 𝒅𝒊𝒄𝒂 𝒒𝒖𝒂𝒏𝒅𝒐 𝒒𝒖𝒊𝒔𝒆𝒓.
+-   **Modo Difícil:** 𝒆𝒔𝒄𝒐𝒏𝒅𝒆 𝒂 𝒅𝒊𝒄𝒂 𝒆 𝒊𝒏𝒊𝒄𝒊𝒂 𝒖𝒎 𝒄𝒓𝒐𝒏𝒐̂𝒎𝒆𝒕𝒓𝒐 𝒅𝒆  𝟏 𝒎𝒊𝒏𝒖𝒕𝒐 𝒆 𝟓𝟎 𝒔𝒆𝒈𝒖𝒏𝒅𝒐𝒔 𝒑𝒂𝒓𝒂 𝒄𝒂𝒅𝒂 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂.
+  
+꩜ 𝑶 𝒒𝒖𝒊𝒛 𝒑𝒐𝒔𝒔𝒖𝒊 𝟏𝟓 - 𝟐𝟎 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂𝒔 𝒄𝒂𝒅𝒂𝒔𝒕𝒓𝒂𝒅𝒂𝒔 𝒏𝒐 𝑱𝒂𝒗𝒂𝑺𝒄𝒓𝒊𝒑𝒕. 𝑶𝒔 𝒂𝒔𝒔𝒖𝒏𝒕𝒐𝒔 𝒊𝒏𝒄𝒍𝒖𝒆𝒎 𝒍𝒊𝒏𝒈𝒖𝒂𝒈𝒆𝒏𝒔 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐, 𝑯𝑻𝑴𝑳, 𝑪𝑺𝑺, 𝑺𝑸𝑳, 𝑪, 𝑱𝑺𝑶𝑵, 𝑮𝒊𝒕, 𝒉𝒂𝒓𝒅𝒘𝒂𝒓𝒆, 𝒂𝒍𝒈𝒐𝒓𝒊𝒕𝒎𝒐𝒔, 𝒍𝒐́𝒈𝒊𝒄𝒂 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐 𝒆 𝒅𝒆𝒔𝒆𝒏𝒗𝒐𝒍𝒗𝒊𝒎𝒆𝒏𝒕𝒐 𝒅𝒆 𝒋𝒐𝒈𝒐𝒔.
+
+꩜ 𝑸𝒖𝒂𝒏𝒅𝒐 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒆𝒔𝒄𝒐𝒍𝒉𝒆 𝒖𝒎𝒂 𝒂𝒍𝒕𝒆𝒓𝒏𝒂𝒕𝒊𝒗𝒂, 𝒐 𝒔𝒊𝒔𝒕𝒆𝒎𝒂 𝒊𝒏𝒇𝒐𝒓𝒎𝒂 𝒔𝒆 𝒂 𝒓𝒆𝒔𝒑𝒐𝒔𝒕𝒂 𝒆𝒔𝒕𝒂́ 𝒄𝒆𝒓𝒕𝒂 𝒐𝒖 𝒆𝒓𝒓𝒂𝒅𝒂 𝒆 𝒂𝒑𝒓𝒆𝒔𝒆𝒏𝒕𝒂 𝒖𝒎𝒂 𝒆𝒙𝒑𝒍𝒊𝒄𝒂𝒄̧𝒂̃𝒐. 𝑵𝒐 𝒇𝒊𝒏𝒂𝒍, 𝒆́ 𝒆𝒙𝒊𝒃𝒊𝒅𝒂 𝒂 𝒒𝒖𝒂𝒏𝒕𝒊𝒅𝒂𝒅𝒆 𝒅𝒆 𝒒𝒖𝒆𝒔𝒕𝒐̃𝒆𝒔 𝒓𝒆𝒔𝒑𝒐𝒏𝒅𝒊𝒅𝒂𝒔 𝒄𝒐𝒓𝒓𝒆𝒕𝒂𝒎𝒆𝒏𝒕𝒆. 𝑻𝒂𝒎𝒃𝒆́𝒎 𝒆𝒙𝒊𝒔𝒕𝒆 𝒖𝒎 𝒃𝒐𝒕𝒂̃𝒐 𝒅𝒆 𝒂𝒄𝒆𝒔𝒔𝒊𝒃𝒊𝒍𝒊𝒅𝒂𝒅𝒆 𝒑𝒍𝒂𝒏𝒆𝒋𝒂𝒅𝒐 𝒑𝒂𝒓𝒂 𝒂𝒕𝒊𝒗𝒂𝒓 𝒓𝒆𝒄𝒖𝒓𝒔𝒐𝒔 𝒄𝒐𝒎𝒐 𝒂𝒍𝒕𝒐 𝒄𝒐𝒏𝒕𝒓𝒂𝒔𝒕𝒆 𝒆 𝒂𝒋𝒖𝒔𝒕𝒆𝒔 𝒗𝒊𝒔𝒖𝒂𝒊𝒔.
 
 ## 🛠️ Tecnologias do projeto
 
