@@ -1,12 +1,7 @@
-<div data-importer="border">
-  <img style="100%" src="https://capsule-render.vercel.app/api?type=waving&height=116&section=header&reversal=false&fontSize=70&fontColor=FFFFFF&fontAlign=50&fontAlignY=50&stroke=-&descSize=20&descAlign=50&descAlignY=50&color=FFFFFF"  />
-</div>
-
-###
-
 # [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=F7F7F7&width=435&lines=%F0%9F%92%BB%7C+%F0%9D%97%A4%F0%9D%98%82%F0%9D%97%B6%F0%9D%98%87+%F0%9D%97%B1%F0%9D%97%B2+%F0%9D%97%96%F0%9D%97%BC%F0%9D%97%BB%F0%9D%97%B5%F0%9D%97%B2%F0%9D%97%B0%F0%9D%97%B6%F0%9D%97%BA%F0%9D%97%B2%F0%9D%97%BB%F0%9D%98%81%F0%9D%97%BC%F0%9D%98%80+%F0%9D%97%9A%F0%9D%97%B2%F0%9D%97%BF%F0%9D%97%AE%F0%9D%97%B6%F0%9D%98%80+%F0%9D%97%B2%F0%9D%97%BA+%F0%9D%97%A7.%F0%9D%97%9C)](https://git.io/typing-svg)
 
-ᯓ 𝑨𝒃𝒂𝒊𝒙𝒐 𝒗𝒐𝒄𝒆̂ 𝒗𝒆𝒓𝒂́ 𝒕𝒐𝒅𝒐 𝒐 𝒑𝒓𝒐𝒄𝒆𝒔𝒔𝒐, 𝒑𝒂𝒔𝒔𝒐 𝒂 𝒑𝒂𝒔𝒔𝒐 𝒑𝒂𝒓𝒂 𝒂 𝒄𝒓𝒊𝒂𝒄̧𝒂̃𝒐 𝒅𝒐 𝒏𝒐𝒔𝒔𝒐 𝒑𝒓𝒐𝒋𝒆𝒕𝒐. 𝑹𝒆𝒄𝒐𝒎𝒆𝒏𝒅𝒂𝒎𝒐𝒔 𝒒𝒖𝒆 𝒇𝒊𝒒𝒖𝒆 𝒂𝒕𝒆𝒏𝒕𝒐(𝒂) 𝒂𝒐𝒔 𝒅𝒆𝒕𝒂𝒍𝒉𝒆𝒔. 𝑵𝒐́𝒔 𝒑𝒆𝒅𝒊𝒎𝒐𝒔 𝒅𝒆𝒔𝒄𝒖𝒍𝒑𝒂𝒔 𝒄𝒂𝒔𝒐 𝒐𝒄𝒐𝒓𝒓𝒂 𝒂𝒍𝒈𝒖𝒎 𝒆𝒓𝒓𝒐 𝒅𝒖𝒓𝒂𝒏𝒕𝒆 𝒔𝒆𝒖 𝒂𝒄𝒆𝒔𝒔𝒐 𝒆𝒎 𝒏𝒐𝒔𝒔𝒂 𝒑𝒍𝒂𝒕𝒂𝒇𝒐𝒓𝒎𝒂.
+ᯓ 𝑨𝒃𝒂𝒊𝒙𝒐 𝒗𝒐𝒄𝒆̂ 𝒗𝒆𝒓𝒂́ 𝒕𝒐𝒅𝒐 𝒐 𝒑𝒓𝒐𝒄𝒆𝒔𝒔𝒐, 𝒑𝒂𝒔𝒔𝒐 𝒂 𝒑𝒂𝒔𝒔𝒐 𝒑𝒂𝒓𝒂 𝒂 𝒄𝒓𝒊𝒂𝒄̧𝒂̃𝒐 𝒅𝒐 𝒏𝒐𝒔𝒔𝒐 𝑸𝒖𝒊𝒛. 𝑵𝒐́𝒔 𝒑𝒆𝒅𝒊𝒎𝒐𝒔 𝒅𝒆𝒔𝒄𝒖𝒍𝒑𝒂𝒔 𝒄𝒂𝒔𝒐 𝒐𝒄𝒐𝒓𝒓𝒂 𝒂𝒍𝒈𝒖𝒎 𝒆𝒓𝒓𝒐 𝒅𝒖𝒓𝒂𝒏𝒕𝒆 𝒔𝒆𝒖 𝒂𝒄𝒆𝒔𝒔𝒐 𝒆𝒎 𝒏𝒐𝒔𝒔𝒂 𝒑𝒍𝒂𝒕𝒂𝒇𝒐𝒓𝒎𝒂.
+
 
 ## ⎚ | Sobre o projeto  ˙𐃷˙
 
@@ -17,12 +12,9 @@
 
 ꩜ 𝑶 𝒑𝒓𝒐𝒋𝒆𝒕𝒐 𝒆𝒔𝒕𝒂́ 𝒔𝒆𝒏𝒅𝒐 𝒅𝒆𝒔𝒆𝒏𝒗𝒐𝒍𝒗𝒊𝒅𝒐 𝒄𝒐𝒎𝒐 𝒖𝒎𝒂 𝒂𝒕𝒊𝒗𝒊𝒅𝒂𝒅𝒆 𝒊𝒏𝒕𝒆𝒓𝒅𝒊𝒔𝒄𝒊𝒑𝒍𝒊𝒏𝒂𝒓 𝒅𝒂 𝒇𝒂𝒄𝒖𝒍𝒅𝒂𝒅𝒆. 𝑪𝒐𝒎𝒐 𝒆𝒔𝒕𝒂𝒎𝒐𝒔 𝒏𝒐 𝒔𝒆𝒈𝒖𝒏𝒅𝒐 𝒔𝒆𝒎𝒆𝒔𝒕𝒓𝒆 𝒅𝒆 𝑪𝒊𝒆̂𝒏𝒄𝒊𝒂 𝒅𝒂 𝑪𝒐𝒎𝒑𝒖𝒕𝒂𝒄̧𝒂̃𝒐 𝒆 𝑨𝒏𝒂́𝒍𝒊𝒔𝒆 𝒆 𝑫𝒆𝒔𝒆𝒏𝒗𝒐𝒍𝒗𝒊𝒎𝒆𝒏𝒕𝒐 𝒅𝒆 𝑺𝒊𝒔𝒕𝒆𝒎𝒂𝒔, 𝒃𝒖𝒔𝒄𝒂𝒎𝒐𝒔 𝒄𝒐𝒏𝒔𝒕𝒓𝒖𝒊𝒓 𝒂𝒍𝒈𝒐 𝒒𝒖𝒆 𝒔𝒆𝒋𝒂 𝒖́𝒕𝒊𝒍, 𝒇𝒂́𝒄𝒊𝒍 𝒅𝒆 𝒆𝒏𝒕𝒆𝒏𝒅𝒆𝒓 𝒆 𝒒𝒖𝒆 𝒏𝒐𝒔 𝒂𝒋𝒖𝒅𝒆 𝒂 𝒑𝒓𝒂𝒕𝒊𝒄𝒂𝒓 𝒐𝒔 𝒄𝒐𝒏𝒕𝒆𝒖́𝒅𝒐𝒔 𝒗𝒊𝒔𝒕𝒐𝒔 𝒏𝒂𝒔 𝒂𝒖𝒍𝒂𝒔.
 
-## 🎯 Objetivo
+##  ⎚ | Objetivo ✧
 
-Criar um quiz em que a pessoa possa responder perguntas sobre
-tecnologia, conferir se acertou e aprender um pouco mais com as
-explicações apresentadas no final de cada resposta.
-
+꩜ 𝑶 𝒏𝒐𝒔𝒔𝒐 𝒐𝒃𝒋𝒆𝒕𝒊𝒗𝒐 𝒑𝒓𝒊𝒏𝒄𝒊𝒑𝒂𝒍 𝒆𝒓𝒂 𝒄𝒓𝒊𝒂𝒓 𝒖𝒎 𝒒𝒖𝒊𝒛 𝒆𝒎 𝒒𝒖𝒆 𝒂 𝒑𝒆𝒔𝒔𝒐𝒂 𝒑𝒐𝒅𝒆𝒓𝒊𝒂 𝒓𝒆𝒔𝒑𝒐𝒏𝒅𝒆𝒓 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂𝒔 𝒔𝒐𝒃𝒓𝒆 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂 𝒆 𝒔𝒖𝒂𝒔 𝒓𝒆𝒔𝒑𝒆𝒄𝒕𝒊𝒗𝒂𝒔 𝒂́𝒓𝒆𝒂𝒔 𝒅𝒆 𝒊𝒏𝒕𝒆𝒓𝒆𝒔𝒔𝒆, 𝒑𝒂𝒓𝒂 𝒂𝒔𝒔𝒊𝒎 𝒄𝒐𝒏𝒉𝒆𝒄𝒆𝒓 𝒖𝒎 𝒑𝒐𝒖𝒄𝒐 𝒅𝒆 𝒄𝒂𝒅𝒂 𝒑𝒊𝒍𝒂𝒓 𝒅𝒂 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂 𝒅𝒂 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄̧𝒂̃𝒐, 𝒆 𝒂𝒔𝒔𝒊𝒎 𝒏𝒐 𝒇𝒊𝒏𝒂𝒍 𝒄𝒐𝒏𝒇𝒆𝒓𝒊𝒓 𝒔𝒆 𝒂𝒄𝒆𝒓𝒕𝒐𝒖 𝒂𝒔 𝒒𝒖𝒆𝒔𝒕𝒐̃𝒆𝒔 𝒂𝒑𝒓𝒆𝒔𝒆𝒏𝒕𝒂𝒅𝒂𝒔. 𝑵𝒐́𝒔 𝒑𝒆𝒏𝒔𝒂𝒎𝒐𝒔 𝒒𝒖𝒆 𝒇𝒂𝒛𝒆𝒏𝒅𝒐 𝒅𝒆𝒔𝒔𝒂 𝒇𝒐𝒓𝒎𝒂 𝒑𝒐𝒅𝒆𝒓𝒆𝒎𝒐𝒔 𝒂𝒋𝒖𝒅𝒂𝒓 𝒂𝒔 𝒑𝒆𝒔𝒔𝒐𝒂𝒔 𝒂 𝒄𝒐𝒏𝒉𝒆𝒄𝒆𝒓𝒆𝒎 𝒖𝒎 𝒑𝒐𝒖𝒄𝒐 𝒎𝒂𝒊𝒔 𝒔𝒐𝒃𝒓𝒆 𝑻.𝑰.
 ## 🧠 Como o quiz funciona
 
 Na versão atual, o usuário pode escolher entre três níveis:
