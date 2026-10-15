@@ -29,7 +29,7 @@
 
 ꩜ 𝑸𝒖𝒂𝒏𝒅𝒐 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒆𝒔𝒄𝒐𝒍𝒉𝒆 𝒖𝒎𝒂 𝒂𝒍𝒕𝒆𝒓𝒏𝒂𝒕𝒊𝒗𝒂, 𝒐 𝒔𝒊𝒔𝒕𝒆𝒎𝒂 𝒊𝒏𝒇𝒐𝒓𝒎𝒂 𝒔𝒆 𝒂 𝒓𝒆𝒔𝒑𝒐𝒔𝒕𝒂 𝒆𝒔𝒕𝒂́ 𝒄𝒆𝒓𝒕𝒂 𝒐𝒖 𝒆𝒓𝒓𝒂𝒅𝒂 𝒆 𝒂𝒑𝒓𝒆𝒔𝒆𝒏𝒕𝒂 𝒖𝒎𝒂 𝒆𝒙𝒑𝒍𝒊𝒄𝒂𝒄̧𝒂̃𝒐. 𝑵𝒐 𝒇𝒊𝒏𝒂𝒍, 𝒆́ 𝒆𝒙𝒊𝒃𝒊𝒅𝒂 𝒂 𝒒𝒖𝒂𝒏𝒕𝒊𝒅𝒂𝒅𝒆 𝒅𝒆 𝒒𝒖𝒆𝒔𝒕𝒐̃𝒆𝒔 𝒓𝒆𝒔𝒑𝒐𝒏𝒅𝒊𝒅𝒂𝒔 𝒄𝒐𝒓𝒓𝒆𝒕𝒂𝒎𝒆𝒏𝒕𝒆. 𝑻𝒂𝒎𝒃𝒆́𝒎 𝒆𝒙𝒊𝒔𝒕𝒆 𝒖𝒎 𝒃𝒐𝒕𝒂̃𝒐 𝒅𝒆 𝒂𝒄𝒆𝒔𝒔𝒊𝒃𝒊𝒍𝒊𝒅𝒂𝒅𝒆 𝒑𝒍𝒂𝒏𝒆𝒋𝒂𝒅𝒐 𝒑𝒂𝒓𝒂 𝒂𝒕𝒊𝒗𝒂𝒓 𝒓𝒆𝒄𝒖𝒓𝒔𝒐𝒔 𝒄𝒐𝒎𝒐 𝒂𝒍𝒕𝒐 𝒄𝒐𝒏𝒕𝒓𝒂𝒔𝒕𝒆 𝒆 𝒂𝒋𝒖𝒔𝒕𝒆𝒔 𝒗𝒊𝒔𝒖𝒂𝒊𝒔.
 
-## ⎚ | Tecnologias do projeto ⚒
+## ⎚ | Tecnologias do projeto ≡
 
 ꩜ 𝑨 𝒑𝒓𝒐𝒑𝒐𝒔𝒕𝒂 𝒅𝒐 𝒕𝒓𝒂𝒃𝒂𝒍𝒉𝒐 𝒆𝒏𝒗𝒐𝒍𝒗𝒆 𝒂𝒔 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂𝒔 𝒂𝒃𝒂𝒊𝒙𝒐. 𝑬́ 𝒊𝒎𝒑𝒐𝒓𝒕𝒂𝒏𝒕𝒆 𝒔𝒆𝒑𝒂𝒓𝒂𝒓 𝒐 𝒒𝒖𝒆 𝒋𝒂́ 𝒂𝒑𝒂𝒓𝒆𝒄𝒆 𝒏𝒐𝒔 𝒂𝒓𝒒𝒖𝒊𝒗𝒐𝒔 𝒆𝒏𝒗𝒊𝒂𝒅𝒐𝒔 𝒅𝒂𝒒𝒖𝒊𝒍𝒐 𝒒𝒖𝒆 𝒂𝒊𝒏𝒅𝒂 𝒑𝒓𝒆𝒄𝒊𝒔𝒂 𝒔𝒆𝒓 𝒊𝒏𝒕𝒆𝒈𝒓𝒂𝒅𝒐.
 
@@ -44,9 +44,9 @@
 | ‣ **𝘼𝙋𝙄 𝙙𝙚 𝙎𝙚𝙜𝙪𝙧𝙖𝙣𝙘̧𝙖** | ݁⋆ 𝑰𝒏𝒕𝒆𝒈𝒓𝒂𝒓 𝒐𝒔 𝒓𝒆𝒄𝒖𝒓𝒔𝒐𝒔 𝒅𝒆 𝒔𝒆𝒈𝒖𝒓𝒂𝒏𝒄̧𝒂 𝒆𝒙𝒊𝒈𝒊𝒅𝒐𝒔 𝒑𝒆𝒍𝒐 𝒕𝒓𝒂𝒃𝒂𝒍𝒉𝒐. 𝑨 𝑨𝑷𝑰 𝒆𝒔𝒑𝒆𝒄𝒊́𝒇𝒊𝒄𝒂 𝒆 𝒔𝒖𝒂 𝒇𝒖𝒏𝒄̧𝒂̃𝒐 𝒔𝒆𝒓𝒂̃𝒐 𝒅𝒆𝒇𝒊𝒏𝒊𝒅𝒂𝒔 𝒄𝒐𝒏𝒇𝒐𝒓𝒎𝒆 𝒐𝒔 𝒓𝒆𝒒𝒖𝒊𝒔𝒊𝒕𝒐𝒔 𝒅𝒂 𝒂𝒕𝒊𝒗𝒊𝒅𝒂𝒅𝒆. |
 
 
-## 📁 Estrutura sugerida dos arquivos
+## ⎚ |  Estrutura sugerida dos arquivos ⎙ 
 
-Uma organização possível para o repositório é:
+𝑼𝒎𝒂 𝒐𝒓𝒈𝒂𝒏𝒊𝒛𝒂𝒄̧𝒂̃𝒐 𝒑𝒐𝒔𝒔𝒊́𝒗𝒆𝒍 𝒑𝒂𝒓𝒂 𝒐 𝒓𝒆𝒑𝒐𝒔𝒊𝒕𝒐́𝒓𝒊𝒐 𝒆́:
 
 ``` text
 quiz-conhecimentos-ti/
@@ -59,11 +59,9 @@ quiz-conhecimentos-ti/
 └── docs/            # Materiais complementares, se necessário
 ```
 
-Essa é uma **estrutura sugerida**. Os nomes e as pastas podem mudar
-conforme a organização final do grupo e a forma como as tecnologias
-forem integradas.
+꩜ 𝑬𝒔𝒔𝒂 𝒆́ 𝒖𝒎𝒂 **𝒆𝒔𝒕𝒓𝒖𝒕𝒖𝒓𝒂 𝒔𝒖𝒈𝒆𝒓𝒊𝒅𝒂**. 𝑶𝒔 𝒏𝒐𝒎𝒆𝒔 𝒆 𝒂𝒔 𝒑𝒂𝒔𝒕𝒂𝒔 𝒑𝒐𝒅𝒆𝒎 𝒎𝒖𝒅𝒂𝒓 𝒄𝒐𝒏𝒇𝒐𝒓𝒎𝒆 𝒂 𝒐𝒓𝒈𝒂𝒏𝒊𝒛𝒂𝒄̧𝒂̃𝒐 𝒇𝒊𝒏𝒂𝒍 𝒅𝒐 𝒈𝒓𝒖𝒑𝒐 𝒆 𝒂 𝒇𝒐𝒓𝒎𝒂 𝒄𝒐𝒎𝒐 𝒂𝒔 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂𝒔 𝒇𝒐𝒓𝒆𝒎 𝒊𝒏𝒕𝒆𝒈𝒓𝒂𝒅𝒂𝒔.
 
-## ▶️ Como executar
+## ⎚ |  Como executar? ➤
 
 Para testar a versão HTML e JavaScript no computador:
 
