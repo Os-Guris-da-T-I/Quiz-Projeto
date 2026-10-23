@@ -25,7 +25,7 @@
 -   **𝗠𝗼𝗱𝗼 𝗡𝗼𝗿𝗺𝗮𝗹:** 𝒑𝒆𝒓𝒎𝒊𝒕𝒆 𝒒𝒖𝒆 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒗𝒆𝒋𝒂 𝒖𝒎𝒂 𝒅𝒊𝒄𝒂 𝒒𝒖𝒂𝒏𝒅𝒐 𝒒𝒖𝒊𝒔𝒆𝒓.
 -   **𝗠𝗼𝗱𝗼 𝗗𝗶𝗳𝗶́𝗰𝗶𝗹:** 𝒆𝒔𝒄𝒐𝒏𝒅𝒆 𝒂 𝒅𝒊𝒄𝒂 𝒆 𝒊𝒏𝒊𝒄𝒊𝒂 𝒖𝒎 𝒄𝒓𝒐𝒏𝒐̂𝒎𝒆𝒕𝒓𝒐 𝒅𝒆  𝟏 𝒎𝒊𝒏𝒖𝒕𝒐 𝒆 𝟓𝟎 𝒔𝒆𝒈𝒖𝒏𝒅𝒐𝒔 𝒑𝒂𝒓𝒂 𝒄𝒂𝒅𝒂 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂.
   
-꩜ 𝑶 𝒒𝒖𝒊𝒛 𝒑𝒐𝒔𝒔𝒖𝒊 𝟏𝟓 - 𝟐𝟎 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂𝒔 𝒄𝒂𝒅𝒂𝒔𝒕𝒓𝒂𝒅𝒂𝒔 𝒏𝒐 𝑱𝒂𝒗𝒂𝑺𝒄𝒓𝒊𝒑𝒕. 𝑶𝒔 𝒂𝒔𝒔𝒖𝒏𝒕𝒐𝒔 𝒊𝒏𝒄𝒍𝒖𝒆𝒎 𝒍𝒊𝒏𝒈𝒖𝒂𝒈𝒆𝒏𝒔 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐, 𝑯𝑻𝑴𝑳, 𝑪𝑺𝑺, 𝑺𝑸𝑳, 𝑪, 𝑱𝑺𝑶𝑵, 𝑮𝒊𝒕, 𝒉𝒂𝒓𝒅𝒘𝒂𝒓𝒆, 𝒂𝒍𝒈𝒐𝒓𝒊𝒕𝒎𝒐𝒔, 𝒍𝒐́𝒈𝒊𝒄𝒂 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐 𝒆 𝒅𝒆𝒔𝒆𝒏𝒗𝒐𝒍𝒗𝒊𝒎𝒆𝒏𝒕𝒐 𝒅𝒆 𝒋𝒐𝒈𝒐𝒔.
+꩜ 𝑶 𝒒𝒖𝒊𝒛 𝒑𝒐𝒔𝒔𝒖𝒊 𝟐𝟎 𝒑𝒆𝒓𝒈𝒖𝒏𝒕𝒂𝒔 𝒄𝒂𝒅𝒂𝒔𝒕𝒓𝒂𝒅𝒂𝒔 𝒏𝒐 𝑱𝒂𝒗𝒂𝑺𝒄𝒓𝒊𝒑𝒕. 𝑶𝒔 𝒂𝒔𝒔𝒖𝒏𝒕𝒐𝒔 𝒊𝒏𝒄𝒍𝒖𝒆𝒎 𝒍𝒊𝒏𝒈𝒖𝒂𝒈𝒆𝒏𝒔 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐, 𝑯𝑻𝑴𝑳, 𝑪𝑺𝑺, 𝑺𝑸𝑳, 𝑪, 𝑱𝑺𝑶𝑵, 𝑮𝒊𝒕, 𝒉𝒂𝒓𝒅𝒘𝒂𝒓𝒆, 𝒂𝒍𝒈𝒐𝒓𝒊𝒕𝒎𝒐𝒔, 𝒍𝒐́𝒈𝒊𝒄𝒂 𝒅𝒆 𝒑𝒓𝒐𝒈𝒓𝒂𝒎𝒂𝒄̧𝒂̃𝒐 𝒆 𝒅𝒆𝒔𝒆𝒏𝒗𝒐𝒍𝒗𝒊𝒎𝒆𝒏𝒕𝒐 𝒅𝒆 𝒋𝒐𝒈𝒐𝒔.
 
 ꩜ 𝑸𝒖𝒂𝒏𝒅𝒐 𝒐 𝒖𝒔𝒖𝒂́𝒓𝒊𝒐 𝒆𝒔𝒄𝒐𝒍𝒉𝒆 𝒖𝒎𝒂 𝒂𝒍𝒕𝒆𝒓𝒏𝒂𝒕𝒊𝒗𝒂, 𝒐 𝒔𝒊𝒔𝒕𝒆𝒎𝒂 𝒊𝒏𝒇𝒐𝒓𝒎𝒂 𝒔𝒆 𝒂 𝒓𝒆𝒔𝒑𝒐𝒔𝒕𝒂 𝒆𝒔𝒕𝒂́ 𝒄𝒆𝒓𝒕𝒂 𝒐𝒖 𝒆𝒓𝒓𝒂𝒅𝒂 𝒆 𝒂𝒑𝒓𝒆𝒔𝒆𝒏𝒕𝒂 𝒖𝒎𝒂 𝒆𝒙𝒑𝒍𝒊𝒄𝒂𝒄̧𝒂̃𝒐. 𝑵𝒐 𝒇𝒊𝒏𝒂𝒍, 𝒆́ 𝒆𝒙𝒊𝒃𝒊𝒅𝒂 𝒂 𝒒𝒖𝒂𝒏𝒕𝒊𝒅𝒂𝒅𝒆 𝒅𝒆 𝒒𝒖𝒆𝒔𝒕𝒐̃𝒆𝒔 𝒓𝒆𝒔𝒑𝒐𝒏𝒅𝒊𝒅𝒂𝒔 𝒄𝒐𝒓𝒓𝒆𝒕𝒂𝒎𝒆𝒏𝒕𝒆. 𝑻𝒂𝒎𝒃𝒆́𝒎 𝒆𝒙𝒊𝒔𝒕𝒆 𝒖𝒎 𝒃𝒐𝒕𝒂̃𝒐 𝒅𝒆 𝒂𝒄𝒆𝒔𝒔𝒊𝒃𝒊𝒍𝒊𝒅𝒂𝒅𝒆 𝒑𝒍𝒂𝒏𝒆𝒋𝒂𝒅𝒐 𝒑𝒂𝒓𝒂 𝒂𝒕𝒊𝒗𝒂𝒓 𝒓𝒆𝒄𝒖𝒓𝒔𝒐𝒔 𝒄𝒐𝒎𝒐 𝒂𝒍𝒕𝒐 𝒄𝒐𝒏𝒕𝒓𝒂𝒔𝒕𝒆 𝒆 𝒂𝒋𝒖𝒔𝒕𝒆𝒔 𝒗𝒊𝒔𝒖𝒂𝒊𝒔.
 
@@ -56,7 +56,7 @@ quiz-conhecimentos-ti/
 ├── dados.json       # Dados em JSON, se utilizado
 ├── src-c/           # Código em C, conforme a integração definida
 ├── README.md        # Documentação do projeto
-└── docs/            # Materiais complementares, se necessário
+└── docs/            # Materiais complementares
 ```
 
 ꩜ 𝑬𝒔𝒔𝒂 𝒆́ 𝒖𝒎𝒂 **𝒆𝒔𝒕𝒓𝒖𝒕𝒖𝒓𝒂 𝒔𝒖𝒈𝒆𝒓𝒊𝒅𝒂**. 𝑶𝒔 𝒏𝒐𝒎𝒆𝒔 𝒆 𝒂𝒔 𝒑𝒂𝒔𝒕𝒂𝒔 𝒑𝒐𝒅𝒆𝒎 𝒎𝒖𝒅𝒂𝒓 𝒄𝒐𝒏𝒇𝒐𝒓𝒎𝒆 𝒂 𝒐𝒓𝒈𝒂𝒏𝒊𝒛𝒂𝒄̧𝒂̃𝒐 𝒇𝒊𝒏𝒂𝒍 𝒅𝒐 𝒈𝒓𝒖𝒑𝒐 𝒆 𝒂 𝒇𝒐𝒓𝒎𝒂 𝒄𝒐𝒎𝒐 𝒂𝒔 𝒕𝒆𝒄𝒏𝒐𝒍𝒐𝒈𝒊𝒂𝒔 𝒇𝒐𝒓𝒆𝒎 𝒊𝒏𝒕𝒆𝒈𝒓𝒂𝒅𝒂𝒔.
@@ -97,7 +97,7 @@ O arquivo HTML define três áreas principais:
 
 O arquivo JavaScript contém:
 
--   Uma lista com 15 perguntas e quatro alternativas por questão.
+-   Uma lista com 20 perguntas e quatro alternativas por questão.
 -   A indicação da alternativa correta.
 -   Dicas e explicações para as respostas.
 -   A contagem de acertos.
@@ -146,8 +146,6 @@ podemos realizar são:
 -  Lucas Siqueira Teles
 -  Lucas da Graça Leandro
 -  Gabriel Gonçalves Lima
-
-*Substitua os exemplos pelos nomes dos integrantes do grupo.*
 
 ## 📚 Considerações finais
 
