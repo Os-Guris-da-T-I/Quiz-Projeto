@@ -1,4 +1,3 @@
-Código Inicial:
 
 // ==========================================
 // 1. BANCO DE DADOS (15 Perguntas de TI)
@@ -241,7 +240,7 @@ function finalizarQuiz() {
 
 
 /* ======================================================================
-   5. Decidindo os Modos de Jogo
+   5. Decidindo os Modos do Quiz
    ====================================================================== */
 
 // TAREFA 1: Escolher as classes (Modos de Jogo)
