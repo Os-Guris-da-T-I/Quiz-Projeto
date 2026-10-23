@@ -1,0 +1,282 @@
+/* 
+   1. ESTILOS GERAIS E RESETS
+    */
+html {
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Fundo Azul Marinho com linhas transversais suaves */
+    background-color: #0d1b2a;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 20px
+    );
+    color: #ffffff;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* 
+   2. CABEÇALHO E ESTRUTURA DO CONTAINER
+    */
+.header-acessibilidade {
+    width: 100%;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 650px;
+    margin-top: 15px;
+    text-align: center;
+    padding-bottom: 40px;
+}
+
+#inicio-container h1 {
+    color: #e0f2fe; /* Azul claro */
+    font-size: 2.1rem;
+    margin-bottom: 12px;
+}
+
+#inicio-container p {
+    color: #93c5fd; /* Azul claro suave */
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* 
+   3. BOTÕES E SELEÇÃO DE MODOS
+    */
+.botoes-modo {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+button {
+    padding: 14px 24px;
+    border: 1px solid #60a5fa;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #1e3a8a; /* Azul tom intermediário */
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover:not(:disabled) {
+    background-color: #2563eb;
+    border-color: #93c5fd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.4);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+/* 
+   4. ÁREA DA PERGUNTA, DICA E TEMPO
+    */
+.pergunta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#question {
+    color: #ffffff;
+    font-size: 1.4rem;
+}
+
+#timer-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid #f87171;
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+#btnDica {
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    box-shadow: none;
+}
+
+#textoDica {
+    font-style: italic;
+    color: #e0f2fe;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #38bdf8;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.4s ease;
+}
+
+/* 
+   5. ALTERNATIVAS E RESPOSTAS
+    */
+.alternativas-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+}
+
+.alternativa {
+    background-color: #152238;
+    border: 1.5px solid #3b82f6;
+    color: #ffffff;
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    text-align: left;
+    transition: all 0.25s ease;
+}
+
+.alternativa:hover:not(:disabled) {
+    background-color: #1e293b;
+    border-color: #60a5fa;
+    transform: translateX(4px);
+}
+
+/* Estilos de Validação (Acerto e Erro) */
+.correta {
+    background-color: #15803d !important;
+    color: #ffffff !important;
+    border-color: #4ade80 !important;
+    animation: pop 0.4s ease;
+}
+
+.errada {
+    background-color: #b91c1c !important;
+    color: #ffffff !important;
+    border-color: #fca5a5 !important;
+    animation: shake 0.4s ease;
+}
+
+/* 
+   6. CAIXA DE EXPLICAÇÃO E TELA FINAL
+    */
+#areaExplicacao {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #1e293b;
+    border: 1px solid #3b82f6;
+    color: #f8fafc;
+    text-align: left;
+    animation: fadeInUp 0.4s ease;
+}
+
+#tituloResultado {
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+}
+
+#textoExplicacao {
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+#final h1 {
+    color: #e0f2fe;
+    margin-bottom: 15px;
+}
+
+#finalScore {
+    color: #38bdf8;
+    margin-bottom: 10px;
+}
+
+/* 
+   7. ACCESSIBILIDADE / MODO ALTO CONTRASTE
+    */
+body.modo-acessivel {
+    background-color: #000000 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+body.modo-acessivel .alternativa {
+    background-color: #111111;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+}
+
+body.modo-acessivel button:not(.alternativa) {
+    background-color: #ffff00;
+    color: #000000;
+    border: 2px solid #ffffff;
+    font-weight: bold;
+}
+
+/* 
+   8. ANIMAÇÕES
+    */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%, 75% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes apareceSuave {
+    0%{
+    opacity: 0;
+    transform: translate(15PX);
+}
+    100%{
+    opacity: 1;
+    transform: translate(0);
+    }
+}
+
+.container{
+    animation: apareceSuave 1.10s ease-out;
+}
