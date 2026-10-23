@@ -82,30 +82,6 @@ faz alterações.
 > código em C e a integração com JSON ou com a API de segurança dependem
 > de como essas partes forem conectadas ao projeto.
 
-## 🧩 Organização do código atual
-
-### HTML
-
-O arquivo HTML define três áreas principais:
-
--   **Tela inicial:** apresenta o título e os botões de dificuldade.
--   **Tela do quiz:** mostra a pergunta, as alternativas, a dica, o
-    cronômetro e a explicação.
--   **Tela final:** apresenta a pontuação e permite voltar ao início.
-
-### JavaScript
-
-O arquivo JavaScript contém:
-
--   Uma lista com 20 perguntas e quatro alternativas por questão.
--   A indicação da alternativa correta.
--   Dicas e explicações para as respostas.
--   A contagem de acertos.
--   A troca de perguntas.
--   O cronômetro do modo difícil.
--   Os eventos dos botões de dificuldade, dica, próxima pergunta e
-    reinício.
-
 ## 🔐 Segurança e cuidados
 
 Como o projeto também prevê o uso de uma API de segurança, essa parte
@@ -129,7 +105,6 @@ Alguns cuidados gerais para o projeto:
 Como o projeto ainda está em desenvolvimento, algumas tarefas que
 podemos realizar são:
 
--   Criar e finalizar o arquivo CSS.
 -   Testar todos os modos de dificuldade e corrigir possíveis erros.
 -   Verificar o funcionamento do botão de acessibilidade.
 -   Definir como a linguagem C fará parte do sistema.
