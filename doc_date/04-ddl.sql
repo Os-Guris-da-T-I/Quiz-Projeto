@@ -1,5 +1,5 @@
 -- Passo 7 — Modelo físico
--- Equipe: (nome da equipe, igual ao 00-identificacao.md). Integrantes: João Victor Guimarães Gomes, Gustavo Gabriel Naves Ferreira, Matheus Augusto Antunes Pentogennis, Lucas da Graça Leandro, Lucas Siqueira Teles e Gabriel Gonçalves Lima.
+-- Equipe: João Victor Guimarães Gomes, Gustavo Gabriel Naves Ferreira, Matheus Augusto Antunes Pentogennis, Lucas da Graça Leandro, Lucas Siqueira Teles e Gabriel Gonçalves Lima.
 -- PostgreSQL. Por que este SGBD: é o que a disciplina pede (RNF01), e ele deixa declarar PK, FK, UNIQUE e CHECK
 --   direto nas tabelas, além de ter o tipo TEXT para enunciados e explicações compridos.
 -- Contrato com Aplicativos para Web: os nomes abaixo são os acordados.
