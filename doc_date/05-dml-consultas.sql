@@ -1,25 +1,20 @@
--- Passo 8: carga de teste e consultas
--- Esse arquivo roda depois do 04-ddl.sql, com o banco já criado:
+-- Passo 8 — Carga de teste e consultas
+-- Rode depois de 04-ddl.sql.
 --   psql -d tech_trivia -v ON_ERROR_STOP=1 -f 05-dml-consultas.sql
--- Os nomes das tabelas e colunas são os mesmos do dicionário (03-logico.md).
--- Os resultados que estão em comentário abaixo foram colados do psql depois de rodar tudo do zero.
- 
+-- Nomes de tabelas e colunas conforme o dicionário (03-logico.md).
+
 BEGIN;
- 
--- Aqui a gente coloca as 20 perguntas do quiz do nosso grupo.
--- A ordem dos INSERT importa por causa das chaves estrangeiras: primeiro categoria e publicador
--- (não dependem de ninguém), depois fonte (precisa do publicador e do idioma, que já veio do 04),
--- e por último pergunta (precisa de categoria, fonte e alternativa).
--- Para não ficar decorando número de id, a fonte e a pergunta buscam o id com um SELECT,
--- pelo nome (publicador, categoria, alternativa) ou pela URL (fonte).
--- O que tem na carga:
---   20 perguntas (fact-001 a fact-020);
---   7 categorias, com 3 perguntas em cada uma, menos JSON e APIs, que tem 2;
---   6 publicadores e 16 fontes (o Mozilla sozinho tem 5 fontes, o Python Software Foundation tem 3);
---   4 URLs citadas por 2 perguntas cada (malloc, Constraints, HTTP e JSON);
---   10 perguntas com resposta correta Certo e 10 com Errado.
--- Categoria, publicador e URL entram só uma vez, não repetem em cada pergunta.
- 
+
+-- Massa de teste com o tema do nosso quiz de T.I., nesta ordem: categoria, publicador, fonte, pergunta.
+-- O que a gente colocou (o mínimo pedido era 6 perguntas):
+--   20 perguntas com id fact-001, fact-002, ... fact-020
+--   7 categorias (Python, Front-end, Linguagem C, Banco de Dados, Segurança, Redes e Internet, JSON e APIs),
+--     cada uma com 2 ou 3 perguntas
+--   6 publicadores, e o Mozilla tem 5 fontes
+--   4 URLs citadas por 2 perguntas (malloc, Constraints, HTTP e JSON)
+--   10 perguntas cuja correta é Certo e 10 cuja correta é Errado
+-- Categoria, publicador e URL não são inseridos de novo: a fonte e a pergunta buscam o id com SELECT.
+
 INSERT INTO categoria (nome) VALUES
     ('Python'),
     ('Front-end'),
@@ -28,7 +23,7 @@ INSERT INTO categoria (nome) VALUES
     ('Segurança'),
     ('Redes e Internet'),
     ('JSON e APIs');
- 
+
 INSERT INTO publicador (nome) VALUES
     ('Mozilla'),
     ('Python Software Foundation'),
@@ -36,7 +31,7 @@ INSERT INTO publicador (nome) VALUES
     ('PostgreSQL Global Development Group'),
     ('OWASP Foundation'),
     ('JSON.org');
- 
+
 INSERT INTO fonte (titulo, url, id_publicador, id_idioma) VALUES
     ('HTML',
      'https://developer.mozilla.org/pt-BR/docs/Web/HTML',
@@ -86,8 +81,9 @@ INSERT INTO fonte (titulo, url, id_publicador, id_idioma) VALUES
     ('Introducing JSON',
      'https://www.json.org/json-en.html',
      (SELECT id_publicador FROM publicador WHERE nome = 'JSON.org'), 'en');
- 
+
 INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, id_fonte, id_alternativa_correta) VALUES
+    -- Python
     ('fact-001',
      'Tipagem do Python',
      'O Python usa tipagem dinâmica.',
@@ -109,6 +105,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Python'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://docs.python.org/3/library/stdtypes.html'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Errado')),
+    -- Front-end
     ('fact-004',
      'Para que serve o HTML',
      'O HTML define o significado e a estrutura do conteúdo de uma página web.',
@@ -130,6 +127,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Front-end'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://developer.mozilla.org/pt-BR/docs/Web/JavaScript'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Errado')),
+    -- Linguagem C
     ('fact-007',
      'O que o malloc faz',
      'Em C, a função malloc reserva um bloco de memória sem inicializar o conteúdo.',
@@ -151,6 +149,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Linguagem C'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://en.cppreference.com/w/c/language/pointer'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Certo')),
+    -- Banco de Dados
     ('fact-010',
      'Chave primária',
      'No PostgreSQL, uma chave primária não aceita valores nulos nem repetidos.',
@@ -172,6 +171,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Banco de Dados'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://www.postgresql.org/docs/current/tutorial-join.html'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Errado')),
+    -- Segurança
     ('fact-013',
      'Guardando senhas',
      'Senhas devem ser guardadas com um hash próprio para senhas, e nunca em texto puro.',
@@ -193,6 +193,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Segurança'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://owasp.org/www-project-top-ten/'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Errado')),
+    -- Redes e Internet
     ('fact-016',
      'Quem começa no HTTP',
      'No HTTP, é o cliente quem inicia a comunicação, enviando uma requisição ao servidor.',
@@ -214,6 +215,7 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'Redes e Internet'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Certo')),
+    -- JSON e APIs
     ('fact-019',
      'O que é JSON',
      'O JSON é um formato leve para troca de dados e é fácil de ler para humanos.',
@@ -228,14 +230,12 @@ INSERT INTO pergunta (id_pergunta, titulo, enunciado, explicacao, id_categoria, 
      (SELECT id_categoria FROM categoria WHERE nome = 'JSON e APIs'),
      (SELECT id_fonte FROM fonte WHERE url = 'https://www.json.org/json-en.html'),
      (SELECT id_alternativa FROM alternativa WHERE rotulo = 'Errado'));
- 
+
 COMMIT;
- 
+
 -- RA01. Categorias em ordem alfabética, com a quantidade de perguntas.
--- Usei LEFT JOIN para uma categoria sem nenhuma pergunta aparecer mesmo assim, com 0.
--- O COUNT conta só as perguntas que existem, e o ORDER BY nome deixa em ordem alfabética.
 -- Resultado:
---       categoria     | qtd_perguntas 
+--       categoria     | qtd_perguntas
 --   ------------------+---------------
 --    Banco de Dados   |             3
 --    Front-end        |             3
@@ -245,75 +245,71 @@ COMMIT;
 --    Redes e Internet |             3
 --    Segurança        |             3
 --   (7 rows)
+-- Usei LEFT JOIN para uma categoria sem pergunta aparecer com 0, e ORDER BY nome para a ordem alfabética.
 SELECT c.nome AS categoria, COUNT(p.id_pergunta) AS qtd_perguntas
 FROM categoria c
 LEFT JOIN pergunta p ON p.id_categoria = c.id_categoria
 GROUP BY c.id_categoria, c.nome
 ORDER BY c.nome;
- 
+
 -- RA02a. Uma pergunta aleatória, de qualquer categoria.
--- O ORDER BY random() embaralha as linhas e o LIMIT 1 pega só a primeira.
--- Como é sorteio, o resultado muda a cada execução: o de baixo é o que saiu quando a gente testou.
 -- Resultado (id sorteado):
---    id_pergunta |        titulo        |                                 enunciado                                 
---   -------------+----------------------+---------------------------------------------------------------------------
---    fact-005    | Para que serve o CSS | O CSS serve para programar a lógica da página, como cálculos e condições.
+--    id_pergunta |      titulo      |                                     enunciado
+--   -------------+------------------+------------------------------------------------------------------------------------
+--    fact-013    | Guardando senhas | Senhas devem ser guardadas com um hash próprio para senhas, e nunca em texto puro.
 --   (1 row)
+-- ORDER BY random() embaralha e LIMIT 1 pega uma só. Como é sorteio, muda a cada vez que roda.
 SELECT id_pergunta, titulo, enunciado
 FROM pergunta
 ORDER BY random()
 LIMIT 1;
- 
+
 -- RA02b. Uma pergunta aleatória de uma categoria recebida por parâmetro.
--- Mesma ideia do RA02a, mas sorteando só entre as perguntas da categoria escolhida.
--- No psql o parâmetro é uma variável (comando set); no site esse valor viria da tela do quiz.
 \set categoria 'Python'
--- Resultado (parâmetro: categoria = Python):
---    id_pergunta |       titulo       |                              enunciado                               
---   -------------+--------------------+----------------------------------------------------------------------
---    fact-002    | Inteiros em Python | Em Python, números inteiros não são objetos, são valores primitivos.
+-- Resultado (categoria = Python):
+--    id_pergunta |      titulo       |           enunciado
+--   -------------+-------------------+--------------------------------
+--    fact-001    | Tipagem do Python | O Python usa tipagem dinâmica.
 --   (1 row)
+-- Igual ao RA02a, mas só entre as perguntas da categoria escolhida (no site, ela viria da tela do quiz).
 SELECT p.id_pergunta, p.titulo, p.enunciado
 FROM pergunta p
 JOIN categoria c ON c.id_categoria = p.id_categoria
 WHERE c.nome = :'categoria'
 ORDER BY random()
 LIMIT 1;
- 
+
 -- RA03. Título, enunciado e alternativas de uma pergunta.
--- A pergunta não guarda as alternativas, elas ficam na tabela alternativa (Certo e Errado).
--- Por isso o CROSS JOIN: junta a pergunta escolhida com todas as alternativas.
--- Se um dia tiver mais alternativas, elas aparecem aqui sozinhas, sem mudar a consulta.
 \set pergunta 'fact-001'
--- Resultado (parâmetro: pergunta = fact-001):
---         titulo       |           enunciado            | id_alternativa | alternativa 
+-- Resultado (pergunta = fact-001):
+--         titulo       |           enunciado            | id_alternativa | alternativa
 --   -------------------+--------------------------------+----------------+-------------
 --    Tipagem do Python | O Python usa tipagem dinâmica. |              1 | Certo
 --    Tipagem do Python | O Python usa tipagem dinâmica. |              2 | Errado
 --   (2 rows)
+-- As alternativas ficam na tabela alternativa, então o CROSS JOIN junta a pergunta com todas elas (Certo e Errado).
 SELECT p.titulo, p.enunciado, a.id_alternativa, a.rotulo AS alternativa
 FROM pergunta p
 CROSS JOIN alternativa a
 WHERE p.id_pergunta = :'pergunta'
 ORDER BY a.id_alternativa;
- 
+
 -- RA04. Dada a pergunta e a alternativa escolhida, se acertou.
--- Pega a alternativa que o jogador escolheu (pelo id) e compara com o id_alternativa_correta da pergunta.
--- O resultado é t (verdadeiro) ou f (falso).
--- Testamos duas vezes na fact-001, cuja resposta certa é Certo: com a alternativa correta e com a errada.
+-- Provem com a alternativa correta e com a errada.
 \set pergunta 'fact-001'
--- Resultado (fact-001, escolhida = 1, Certo, que é a correta):
---    id_pergunta | escolhida | acertou 
+-- Resultado (fact-001, escolhida = 1, Certo, a correta):
+--    id_pergunta | escolhida | acertou
 --   -------------+-----------+---------
 --    fact-001    | Certo     | t
 --   (1 row)
 \set escolhida 1
+-- Comparei a alternativa escolhida com o id_alternativa_correta da pergunta: t é acerto, f é erro.
 SELECT p.id_pergunta, a.rotulo AS escolhida, (p.id_alternativa_correta = a.id_alternativa) AS acertou
 FROM pergunta p
 JOIN alternativa a ON a.id_alternativa = :escolhida
 WHERE p.id_pergunta = :'pergunta';
--- Resultado (fact-001, escolhida = 2, Errado, que é a errada):
---    id_pergunta | escolhida | acertou 
+-- Resultado (fact-001, escolhida = 2, Errado, a errada):
+--    id_pergunta | escolhida | acertou
 --   -------------+-----------+---------
 --    fact-001    | Errado    | f
 --   (1 row)
@@ -322,28 +318,29 @@ SELECT p.id_pergunta, a.rotulo AS escolhida, (p.id_alternativa_correta = a.id_al
 FROM pergunta p
 JOIN alternativa a ON a.id_alternativa = :escolhida
 WHERE p.id_pergunta = :'pergunta';
- 
+
 -- RA05. Explicação e fonte: título, publicador, URL e idioma.
--- Junta pergunta, fonte, publicador e idioma para mostrar a explicação e os dados da fonte de uma vez.
--- Usamos a fact-017 (HTTP e estado) como exemplo.
 \set pergunta 'fact-017'
--- Resultado (parâmetro: pergunta = fact-017):
---                                                                explicacao                                                             |        fonte        | publicador |                            url                             | idioma 
---   ------------------------------------------------------------------------------------------------------------------------------------+---------------------+------------+------------------------------------------------------------+--------
---    O HTTP não guarda estado, cada requisição é independente. Para criar sessões usam-se coisas como cookies, que ficam por cima dele. | An overview of HTTP | Mozilla    | https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview | Inglês
---   (1 row)
+\x on
+-- Resultado (pergunta = fact-017, saída em modo expandido):
+--   -[ RECORD 1 ]----------------------------------------------------------------------------------------------------------------------------------
+--   explicacao | O HTTP não guarda estado, cada requisição é independente. Para criar sessões usam-se coisas como cookies, que ficam por cima dele.
+--   fonte      | An overview of HTTP
+--   publicador | Mozilla
+--   url        | https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview
+--   idioma     | Inglês
+-- Junta pergunta, fonte, publicador e idioma. Usei a fact-017 (HTTP e estado) de exemplo.
 SELECT p.explicacao, f.titulo AS fonte, pu.nome AS publicador, f.url, i.descricao AS idioma
 FROM pergunta p
 JOIN fonte f       ON f.id_fonte       = p.id_fonte
 JOIN publicador pu ON pu.id_publicador = f.id_publicador
 JOIN idioma i      ON i.id_idioma      = f.id_idioma
 WHERE p.id_pergunta = :'pergunta';
- 
+\x off
+
 -- RA06. Publicadores mais citados, com o número de perguntas.
--- O caminho é pergunta, depois fonte, depois publicador, porque a pergunta não aponta direto para o publicador.
--- Ordenei do mais citado para o menos citado e, quando empata, por nome.
 -- Resultado:
---                publicador              | qtd_perguntas 
+--                publicador              | qtd_perguntas
 --   -------------------------------------+---------------
 --    Mozilla                             |             6
 --    Cppreference                        |             3
@@ -352,28 +349,27 @@ WHERE p.id_pergunta = :'pergunta';
 --    Python Software Foundation          |             3
 --    JSON.org                            |             2
 --   (6 rows)
+-- A pergunta não aponta direto para o publicador, então o caminho é pergunta, fonte e publicador.
 SELECT pu.nome AS publicador, COUNT(p.id_pergunta) AS qtd_perguntas
 FROM publicador pu
 JOIN fonte f    ON f.id_publicador = pu.id_publicador
 JOIN pergunta p ON p.id_fonte      = f.id_fonte
 GROUP BY pu.id_publicador, pu.nome
 ORDER BY qtd_perguntas DESC, pu.nome;
- 
+
 -- RA07. Fontes citadas por mais de uma pergunta.
--- Agrupa por fonte e usa HAVING para ficar só com as que aparecem em mais de uma pergunta.
--- Não dá para usar WHERE aqui, porque o filtro é em cima do resultado do COUNT.
 -- Resultado:
---           fonte        |                             url                              | qtd_perguntas 
+--           fonte        |                             url                              | qtd_perguntas
 --   ---------------------+--------------------------------------------------------------+---------------
 --    An overview of HTTP | https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview   |             2
 --    Constraints         | https://www.postgresql.org/docs/current/ddl-constraints.html |             2
 --    Introducing JSON    | https://www.json.org/json-en.html                            |             2
 --    malloc              | https://en.cppreference.com/w/c/memory/malloc                |             2
 --   (4 rows)
+-- HAVING filtra depois do COUNT (WHERE não serve aqui, porque o filtro é em cima da contagem).
 SELECT f.titulo AS fonte, f.url, COUNT(p.id_pergunta) AS qtd_perguntas
 FROM fonte f
 JOIN pergunta p ON p.id_fonte = f.id_fonte
 GROUP BY f.id_fonte, f.titulo, f.url
 HAVING COUNT(p.id_pergunta) > 1
 ORDER BY qtd_perguntas DESC, f.titulo;
- 
