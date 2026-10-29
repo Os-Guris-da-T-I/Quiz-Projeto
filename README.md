@@ -1,4 +1,4 @@
-# [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=F7F7F7&width=435&lines=%F0%9F%92%BB%7C+%F0%9D%97%A4%F0%9D%98%82%F0%9D%97%B6%F0%9D%98%87+%F0%9D%97%B1%F0%9D%97%B2+%F0%9D%97%96%F0%9D%97%BC%F0%9D%97%BB%F0%9D%97%B5%F0%9D%97%B2%F0%9D%97%B0%F0%9D%97%B6%F0%9D%97%BA%F0%9D%97%B2%F0%9D%97%BB%F0%9D%98%81%F0%9D%97%BC%F0%9D%98%80+%F0%9D%97%9A%F0%9D%97%B2%F0%9D%97%BF%F0%9D%97%AE%F0%9D%97%B6%F0%9D%98%80+%F0%9D%97%B2%F0%9D%97%BA+%F0%9D%97%A7.%F0%9D%97%9C)](https://git.io/typing-svg)
+# [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=19&pause=1000&color=288CB8&width=435&lines=%F0%9F%92%BB%7C+%F0%9D%97%A4%F0%9D%98%82%F0%9D%97%B6%F0%9D%98%87+%F0%9D%97%B1%F0%9D%97%B2+%F0%9D%97%B0%F0%9D%97%BC%F0%9D%97%BB%F0%9D%97%B5%F0%9D%97%B2%F0%9D%97%B0%F0%9D%97%B6%F0%9D%97%BA%F0%9D%97%B2%F0%9D%97%BB%F0%9D%98%81%F0%9D%97%BC+%F0%9D%97%B2%F0%9D%97%BA+%F0%9D%97%A7.%F0%9D%97%9C)](https://git.io/typing-svg)
 
 ᯓ 𝑨𝒃𝒂𝒊𝒙𝒐 𝒗𝒐𝒄𝒆̂ 𝒗𝒆𝒓𝒂́ 𝒕𝒐𝒅𝒐 𝒐 𝒑𝒓𝒐𝒄𝒆𝒔𝒔𝒐, 𝒑𝒂𝒔𝒔𝒐 𝒂 𝒑𝒂𝒔𝒔𝒐 𝒑𝒂𝒓𝒂 𝒂 𝒄𝒓𝒊𝒂𝒄̧𝒂̃𝒐 𝒅𝒐 𝒏𝒐𝒔𝒔𝒐 𝑸𝒖𝒊𝒛. 𝑵𝒐́𝒔 𝒑𝒆𝒅𝒊𝒎𝒐𝒔 𝒅𝒆𝒔𝒄𝒖𝒍𝒑𝒂𝒔 𝒄𝒂𝒔𝒐 𝒐𝒄𝒐𝒓𝒓𝒂 𝒂𝒍𝒈𝒖𝒎 𝒆𝒓𝒓𝒐 𝒅𝒖𝒓𝒂𝒏𝒕𝒆 𝒔𝒆𝒖 𝒂𝒄𝒆𝒔𝒔𝒐 𝒆𝒎 𝒏𝒐𝒔𝒔𝒂 𝒑𝒍𝒂𝒕𝒂𝒇𝒐𝒓𝒎𝒂.
 
