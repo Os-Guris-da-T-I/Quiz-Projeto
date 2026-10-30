@@ -159,6 +159,7 @@ let pontuacao = 0;
 let modoAtual = "normal";
 let timer;
 let tempoRestante;
+let acessibilidadeAtiva = false;
 
 // ==========================================
 // 4. LÓGICA BASE DO QUIZ (Minha Parte)
