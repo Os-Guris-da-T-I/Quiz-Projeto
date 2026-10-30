@@ -7,7 +7,7 @@ const perguntas = [
         pergunta: "O que é Python?",
         alternativas: ["Um tipo de hardware", "Uma linguagem de programação", "Um sistema operacional", "Um editor de imagens"],
         respostaCorreta: 1,
-        dica: "É frequentemente associada a uma cobra, mas não morde!",
+        dica: "É muito utilizada atualmente em inteligência artificial, automação e análise de dados.",
         explicacaoCorreta: "Exato! Python é uma linguagem de programação de alto nível, famosa por sua sintaxe simples.",
         explicacaoErrada: "Erro. Python não é hardware ou sistema, mas sim uma linguagem de programação muito popular."
     },
@@ -15,7 +15,7 @@ const perguntas = [
         pergunta: "Quais linguagens são muito utilizadas no desenvolvimento de jogos de grande porte (AAA)?",
         alternativas: ["HTML e CSS", "PHP e Ruby", "C++ e C#", "Python e Scratch"],
         respostaCorreta: 2,
-        dica: "São linguagens da família 'C', conhecidas pela altíssima performance.",
+        dica: "São conhecidas por oferecer alto desempenho e são utilizadas em grandes produções de videogames.",
         explicacaoCorreta: "Muito bem! C++ é amplamente usada em engines como Unreal, e C# é a linguagem principal da Unity.",
         explicacaoErrada: "Incorreto. Jogos pesados exigem alta performance, sendo C++ e C# as mais utilizadas."
     },
@@ -23,7 +23,7 @@ const perguntas = [
         pergunta: "O que significa a sigla HTML?",
         alternativas: ["HyperText Markup Language", "Hyperlinks and Text Markup Language", "Home Tool Markup Language", "Hyper Tool Multi Language"],
         respostaCorreta: 0,
-        dica: "É uma linguagem de 'Marcação' de 'Hipertexto'.",
+        dica: "É uma sigla em inglês relacionada à criação de páginas na internet.",
         explicacaoCorreta: "Correto! HTML significa HyperText Markup Language, a linguagem base para estruturar páginas na web.",
         explicacaoErrada: "Você errou. A sigla correta é HyperText Markup Language."
     },
@@ -31,7 +31,7 @@ const perguntas = [
         pergunta: "Na área de TI, o que é um 'Bug'?",
         alternativas: ["Um vírus perigoso", "Uma peça do computador", "Uma linguagem de programação", "Uma falha ou erro no código"],
         respostaCorreta: 3,
-        dica: "O termo surgiu quando um inseto real entrou em um computador antigo.",
+        dica: "Pode acontecer quando um sistema apresenta um comportamento inesperado.",
         explicacaoCorreta: "Isso aí! Um bug é um erro lógico ou falha no código que faz o programa não funcionar como deveria.",
         explicacaoErrada: "Errado. Um bug não é um vírus físico, é simplesmente um erro no código de um software."
     },
@@ -39,7 +39,7 @@ const perguntas = [
         pergunta: "Para que serve a linguagem SQL?",
         alternativas: ["Criar interfaces gráficas", "Gerenciar bancos de dados relacionais", "Desenvolver jogos 3D", "Estilizar páginas web"],
         respostaCorreta: 1,
-        dica: "Pense em tabelas, linhas e colunas de informação.",
+        dica: "É muito utilizada quando precisamos organizar e consultar informações armazenadas.",
         explicacaoCorreta: "Certíssimo! SQL é a linguagem padrão para interagir e gerenciar Bancos de Dados relacionais.",
         explicacaoErrada: "Incorreto. SQL é usada especificamente para consultar e manipular Bancos de Dados."
     },
@@ -47,7 +47,7 @@ const perguntas = [
         pergunta: "O que é o Git?",
         alternativas: ["Um editor de código", "Um tipo de banco de dados", "Um sistema de controle de versão", "Uma rede social para programadores"],
         respostaCorreta: 2,
-        dica: "Ele te salva quando você apaga um código importante e precisa voltar no tempo.",
+        dica: "É muito utilizado por desenvolvedores para acompanhar alterações em projetos.",
         explicacaoCorreta: "Boa! O Git é um sistema de controle de versão que mapeia todas as alterações feitas no código.",
         explicacaoErrada: "Errou. Git é um sistema de controle de versão de código."
     },
@@ -55,7 +55,7 @@ const perguntas = [
         pergunta: "Qual a principal diferença entre Front-end e Back-end?",
         alternativas: ["Front-end é hardware, Back-end é software", "Não há diferença no mercado", "Front-end é o servidor, Back-end é o cliente", "Front-end é a interface visual, Back-end é a lógica do servidor"],
         respostaCorreta: 3,
-        dica: "Front (Frente/Visível) e Back (Trás/Invisível para o usuário).",
+        dica: "Pense na diferença entre aquilo que o usuário vê e aquilo que acontece por trás de um sistema.",
         explicacaoCorreta: "Perfeito! Front-end é o que o usuário vê. Back-end é o que roda por trás (servidor, banco de dados).",
         explicacaoErrada: "Incorreto. O Front-end cuida da parte visual, enquanto o Back-end cuida da lógica no servidor."
     },
@@ -63,7 +63,7 @@ const perguntas = [
         pergunta: "O que faz o CSS em uma página web?",
         alternativas: ["Adiciona lógica e interatividade", "Controla a apresentação visual e o estilo", "Cria a estrutura da página", "Conecta o site ao banco de dados"],
         respostaCorreta: 1,
-        dica: "Ele é responsável pelas cores, fontes e layout.",
+        dica: "É o que ajuda a deixar um site mais bonito e organizado visualmente.",
         explicacaoCorreta: "Correto! O CSS serve para estilizar o HTML, dando cor e formato ao site.",
         explicacaoErrada: "Errou. O CSS não adiciona lógica nem cria estrutura. Ele cuida apenas do estilo visual."
     },
@@ -79,7 +79,7 @@ const perguntas = [
         pergunta: "Qual é a função da memória RAM em um computador?",
         alternativas: ["Armazenar dados temporários para acesso rápido", "Armazenar arquivos permanentemente", "Resfriar a placa-mãe", "Processar gráficos de jogos"],
         respostaCorreta: 0,
-        dica: "Se o computador desligar, tudo que está nela é apagado (é volátil).",
+        dica: "Está relacionada ao desempenho do computador enquanto vários programas estão abertos.",
         explicacaoCorreta: "Exatamente! A RAM armazena informações temporárias que o processador precisa acessar imediatamente.",
         explicacaoErrada: "Errado. A RAM é memória de curto prazo. Quem armazena permanentemente é o HD ou SSD."
     },
@@ -95,7 +95,7 @@ const perguntas = [
         pergunta: "O que caracteriza um software 'Open-source' (Código Aberto)?",
         alternativas: ["É sempre gratuito e sem regras", "É desenvolvido por uma única empresa", "Seu código-fonte está disponível para ser modificado", "Funciona apenas em navegadores"],
         respostaCorreta: 2,
-        dica: "A comunidade de programadores pode ver o código e ajudar a melhorá-lo.",
+        dica: "É muito utilizado por desenvolvedores que gostam de colaborar em projetos e compartilhar conhecimentos com outras pessoas.",
         explicacaoCorreta: "Muito bem! O software de código aberto permite que qualquer pessoa veja e modifique o seu código fonte.",
         explicacaoErrada: "Incorreto. Open-source significa que o código do sistema está público para a comunidade."
     },
@@ -103,7 +103,7 @@ const perguntas = [
         pergunta: "Qual dessas é uma das Engines (motores) de jogos mais populares do mundo?",
         alternativas: ["Photoshop", "Unity", "Excel", "Visual Studio"],
         respostaCorreta: 1,
-        dica: "Começa com a letra U e também tem um C# por trás.",
+        dica: "É uma ferramenta muito conhecida entre desenvolvedores de jogos e possui recursos para criar ambientes em 2D e 3D.",
         explicacaoCorreta: "Acertou! Unity é um dos motores de jogos mais famosos do mundo para PC, consoles e mobile.",
         explicacaoErrada: "Errou. Dentre as opções, a Unity é a engine (motor gráfico) utilizada para criar jogos."
     },
@@ -111,7 +111,7 @@ const perguntas = [
         pergunta: "Na lógica de programação, o que é um dado do tipo 'Booleano' (Boolean)?",
         alternativas: ["Um texto longo", "Um número decimal", "Uma lista de itens", "Um valor que só pode ser Verdadeiro ou Falso"],
         respostaCorreta: 3,
-        dica: "É como um interruptor de luz: só tem dois estados.",
+        dica: "É muito utilizado em estruturas condicionais para trabalhar com duas possibilidades lógicas.",
         explicacaoCorreta: "Exato! Um tipo Booleano trabalha apenas com duas opções lógicas: Verdadeiro (True) ou Falso (False).",
         explicacaoErrada: "Incorreto. Variáveis booleanas são binárias, elas só aceitam Verdadeiro ou Falso."
     },
