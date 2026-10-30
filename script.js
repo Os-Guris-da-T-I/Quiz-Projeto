@@ -293,8 +293,8 @@ btnAcessibilidade.addEventListener("click", () => {
  
     btnAcessibilidade.setAttribute("aria-pressed", acessibilidadeAtiva);
     btnAcessibilidade.innerText = acessibilidadeAtiva
-        ? "🔆 Desativar Acessibilidade"
-        : "♿ Ativar Acessibilidade";
+        ? "🌙 Desativar Acessibilidade"
+        : "🔆 Ativar Acessibilidade";
 });
 
 // TAREFA 4: Lógica do Timer (1 minuto e 50 segundos no modo difícil)
