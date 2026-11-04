@@ -1,0 +1,212 @@
+-- Extensão — Usuários, Login e Ranking do Tech Trivia
+-- Equipe 13: João Victor Guimarães Gomes, Gustavo Gabriel Naves Ferreira, Matheus Augusto Antunes Pentogennis, Lucas da Graça Leandro, Lucas Siqueira Teles e Gabriel Gonçalves Lima.
+--
+-- SGBD: PostgreSQL, o mesmo do 04-ddl.sql. Banco: tech_trivia.
+-- Seguimos as regras do 00-como-entregar.md: nomes em português, minúsculos, sem acento, no singular,
+--   e chave primária id_<tabela>.
+
+BEGIN;
+
+-- ============================================================
+-- TABELA 1: usuario  (dados de usuários)
+-- ============================================================
+-- Cada linha é uma pessoa cadastrada no quiz.
+-- Separei da tabela login para os dados da pessoa ficarem de um lado e a senha do outro,
+--   assim quando a gente listar usuários o hash da senha nem vem junto.
+CREATE TABLE usuario (
+    id_usuario    INTEGER      GENERATED ALWAYS AS IDENTITY,        -- número do usuário (1, 2, 3...), o banco conta sozinho
+    nome          VARCHAR(100) NOT NULL,                            -- nome da pessoa, até 100 caracteres
+    email         VARCHAR(120) NOT NULL,                            -- email da pessoa, não pode repetir
+    data_cadastro TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- quando a conta foi criada; se a gente não mandar nada o banco coloca agora
+
+    CONSTRAINT pk_usuario       PRIMARY KEY (id_usuario),           -- chave primária da tabela
+    CONSTRAINT uq_usuario_email UNIQUE (email),                     -- impede dois cadastros com o mesmo email
+
+    -- nome não pode ser vazio nem só espaços (btrim tira os espaços das pontas)
+    CONSTRAINT ck_usuario_nome  CHECK (btrim(nome) <> ''),
+
+    -- email tem que estar todo em minúsculo e ter um @ que não seja a primeira letra.
+    -- Colocamos o minúsculo porque senão "Ana@x.com" e "ana@x.com" virariam duas contas.
+    -- Então o Flask precisa mandar o email com .lower() antes de salvar.
+    CONSTRAINT ck_usuario_email CHECK (email = lower(email) AND position('@' IN email) > 1)
+);
+
+-- ============================================================
+-- TABELA 2: login  (dados de login)
+-- ============================================================
+-- Aqui fica o que a pessoa usa pra entrar: o nome de login e a senha.
+-- Cada usuário tem um login só (1 para 1), e cada login é de um usuário só.
+CREATE TABLE login (
+    id_login           INTEGER      GENERATED ALWAYS AS IDENTITY,   -- número do login, gerado pelo banco
+    id_usuario         INTEGER      NOT NULL,                       -- de qual usuário é esse login (FK lá embaixo)
+    nome_login         VARCHAR(20)  NOT NULL,                       -- o nome que a pessoa digita pra entrar (também aparece no ranking)
+    senha_hash         VARCHAR(255) NOT NULL,                       -- a senha já embaralhada (hash), NUNCA a senha de verdade
+    data_ultimo_acesso TIMESTAMP,                                   -- último login; fica NULL (vazio) até a pessoa entrar a primeira vez
+
+    CONSTRAINT pk_login         PRIMARY KEY (id_login),
+    CONSTRAINT uq_login_usuario UNIQUE (id_usuario),                -- este UNIQUE é o que garante o 1 para 1: um usuário não ganha dois logins
+    CONSTRAINT uq_login_nome    UNIQUE (nome_login),                -- dois jogadores não podem ter o mesmo nome de login
+
+    -- só letra minúscula, número e _, de 3 a 20 caracteres (o ~ compara com uma expressão regular, igual no 04-ddl.sql)
+    CONSTRAINT ck_login_nome    CHECK (nome_login ~ '^[a-z0-9_]{3,20}$'),
+
+    -- o hash não pode vir vazio (não confere se é um hash bom, só que tem alguma coisa)
+    CONSTRAINT ck_login_senha   CHECK (btrim(senha_hash) <> ''),
+
+    -- liga o login ao usuário. ON DELETE CASCADE: se apagar o usuário, o login dele some junto,
+    --   senão ia sobrar um login sem dono.
+    CONSTRAINT fk_login_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
+);
+
+-- Sobre a senha_hash: o banco não faz o hash, quem faz é o Flask.
+--   Pelo que a gente viu, no Python dá para usar o werkzeug, que já vem junto com o Flask:
+--     from werkzeug.security import generate_password_hash, check_password_hash
+--     hash = generate_password_hash(senha_digitada)          -- na hora de cadastrar
+--     check_password_hash(hash_do_banco, senha_digitada)     -- na hora de logar (devolve True ou False)
+--   O VARCHAR(255) é grande de propósito porque esse hash é comprido (uns 160 caracteres).
+
+-- ============================================================
+-- TABELA 3: ranking
+-- ============================================================
+-- Cada linha é uma partida terminada: quem jogou, em qual modo e quantas acertou.
+-- Um usuário pode ter várias linhas (1 usuário, N partidas), por isso a FK fica aqui e não no usuario.
+CREATE TABLE ranking (
+    id_ranking      INTEGER     GENERATED ALWAYS AS IDENTITY,        -- número da partida, gerado pelo banco
+    id_usuario      INTEGER     NOT NULL,                            -- quem jogou (FK lá embaixo)
+    modo            VARCHAR(10) NOT NULL,                            -- facil, normal ou dificil (mesmos valores do data-modo no index.html)
+    acertos         SMALLINT    NOT NULL,                            -- quantas perguntas acertou (a variável "pontuacao" do script.js)
+    total_perguntas SMALLINT    NOT NULL,                            -- de quantas perguntas era o quiz nessa partida
+    data_partida    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- quando terminou; padrão é a hora de agora
+
+    CONSTRAINT pk_ranking PRIMARY KEY (id_ranking),
+
+    -- só aceita os 3 modos que existem no quiz, qualquer outro texto dá erro
+    CONSTRAINT ck_ranking_modo CHECK (modo IN ('facil', 'normal', 'dificil')),
+
+    -- precisa ter pelo menos 1 pergunta
+    CONSTRAINT ck_ranking_total CHECK (total_perguntas > 0),
+
+    -- acertos não pode ser negativo nem maior que o total (não dá pra acertar 16 de 15)
+    CONSTRAINT ck_ranking_acertos CHECK (acertos >= 0 AND acertos <= total_perguntas),
+
+    -- se o usuário for apagado, as partidas dele saem do ranking também
+    CONSTRAINT fk_ranking_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
+);
+
+-- Guardei o total_perguntas em cada partida porque o quiz hoje tem 15 perguntas (script.js e app.py)
+--   mas a documentação fala em 20. Se o número mudar, as partidas antigas continuam certas.
+
+-- Índices: servem para o banco achar as coisas mais rápido.
+-- Esse primeiro ajuda na consulta do ranking (filtra por modo e ordena pelos acertos do maior pro menor).
+CREATE INDEX idx_ranking_modo_acertos ON ranking (modo, acertos DESC);
+-- Esse segundo ajuda a buscar as partidas de um usuário. Pelo que a gente leu, o PostgreSQL não cria índice
+--   sozinho para chave estrangeira (para a PK e o UNIQUE ele cria), então criamos na mão.
+CREATE INDEX idx_ranking_usuario ON ranking (id_usuario);
+
+-- ============================================================
+-- DADOS DE TESTE
+-- ============================================================
+-- Só para testar. Se não quiser dados de exemplo, apaga daqui até o COMMIT.
+-- Os 3 usuários são inventados (email example.com).
+-- Os hashes abaixo foram gerados com o generate_password_hash do werkzeug a partir de uma senha de teste,
+--   não é senha de ninguém de verdade.
+
+INSERT INTO usuario (nome, email) VALUES
+    ('Ana Teste',   'ana@example.com'),
+    ('Bruno Teste', 'bruno@example.com'),
+    ('Carla Teste', 'carla@example.com');
+
+-- No login a gente não sabe o id_usuario de cabeça (o banco que gerou), então busca pelo email com um SELECT,
+--   igual ao que o 05-dml-consultas.sql faz com categoria e fonte.
+INSERT INTO login (id_usuario, nome_login, senha_hash) VALUES
+    ((SELECT id_usuario FROM usuario WHERE email = 'ana@example.com'),   'ana_dev',
+     'scrypt:32768:8:1$Zcb2cgDAFMNZQKcc$a14ecbf88f435a59622e399d588ecdd08a39497d9f26706c7e7b5334ff5cdde81de03dd7d675b2535d1323c83d2f4e3dac26b51bb96f8df2c707202323d8ad15'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'bruno@example.com'), 'bruno_ti',
+     'scrypt:32768:8:1$ifnSEoEi6yHnj8Gx$b17267e163605d9e292fec97400c2423adb6fc51475de28131bd693ac43fdd83af033ce41d48d0eb0d5911424683997147f54b1dcba1f1246f57a9f7c9f45e50'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'carla@example.com'), 'carla_c',
+     'scrypt:32768:8:1$sM5YU8kCRqnC2piW$c744be2476516bc732aa16fe3eb47f593bf83ee2fe452f8d5c2f43a32c040852586e7ac5d34fb1c864f14667c0199fa1c67ce57ed4d50e03578ea97363c0aa56');
+
+-- 7 partidas de exemplo, todas de 15 perguntas. Coloquei a data na mão para o resultado das consultas ser sempre o mesmo.
+INSERT INTO ranking (id_usuario, modo, acertos, total_perguntas, data_partida) VALUES
+    ((SELECT id_usuario FROM usuario WHERE email = 'ana@example.com'),   'facil',   12, 15, '2026-10-26 14:30:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'ana@example.com'),   'normal',  14, 15, '2026-10-27 19:10:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'ana@example.com'),   'dificil', 10, 15, '2026-10-28 20:45:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'bruno@example.com'), 'normal',  13, 15, '2026-10-27 21:00:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'bruno@example.com'), 'dificil', 15, 15, '2026-10-29 18:20:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'carla@example.com'), 'facil',    9, 15, '2026-10-28 10:15:00'),
+    ((SELECT id_usuario FROM usuario WHERE email = 'carla@example.com'), 'normal',  11, 15, '2026-10-30 16:40:00');
+
+COMMIT;
+
+-- ============================================================
+-- CONSULTAS (o que a API vai precisar buscar)
+-- ============================================================
+
+-- C01. Top 10 partidas do ranking geral.
+-- Junta ranking com login só para mostrar o nome_login em vez do número do usuário.
+-- ORDER BY: mais acertos primeiro e, se empatar, ganha quem terminou antes (data_partida mais antiga).
+-- LIMIT 10 corta nas 10 primeiras linhas.
+-- Resultado com os dados de teste (só tem 7 partidas, então aparecem 7):
+--    jogador  |  modo   | acertos | total_perguntas |    data_partida
+--   ----------+---------+---------+-----------------+---------------------
+--    bruno_ti | dificil |      15 |              15 | 2026-10-29 18:20:00
+--    ana_dev  | normal  |      14 |              15 | 2026-10-27 19:10:00
+--    bruno_ti | normal  |      13 |              15 | 2026-10-27 21:00:00
+--    ana_dev  | facil   |      12 |              15 | 2026-10-26 14:30:00
+--    carla_c  | normal  |      11 |              15 | 2026-10-30 16:40:00
+--    ana_dev  | dificil |      10 |              15 | 2026-10-28 20:45:00
+--    carla_c  | facil   |       9 |              15 | 2026-10-28 10:15:00
+SELECT l.nome_login AS jogador, r.modo, r.acertos, r.total_perguntas, r.data_partida
+FROM ranking r
+JOIN login l ON l.id_usuario = r.id_usuario
+ORDER BY r.acertos DESC, r.data_partida ASC
+LIMIT 10;
+
+-- C02. Melhor pontuação de cada jogador em cada modo.
+-- GROUP BY junta as partidas do mesmo jogador e modo, e o MAX pega a maior pontuação do grupo.
+-- Trocando o WHERE (por exemplo WHERE r.modo = 'dificil') dá para ter o ranking de um modo só.
+-- Resultado com os dados de teste (7 linhas, ordenadas por modo):
+--    jogador  |  modo   | melhor_pontuacao
+--   ----------+---------+------------------
+--    bruno_ti | dificil |               15
+--    ana_dev  | dificil |               10
+--    ana_dev  | facil   |               12
+--    carla_c  | facil   |                9
+--    ana_dev  | normal  |               14
+--    bruno_ti | normal  |               13
+--    carla_c  | normal  |               11
+SELECT l.nome_login AS jogador, r.modo, MAX(r.acertos) AS melhor_pontuacao
+FROM ranking r
+JOIN login l ON l.id_usuario = r.id_usuario
+GROUP BY l.nome_login, r.modo
+ORDER BY r.modo, melhor_pontuacao DESC, l.nome_login;
+
+-- C03. O que a API busca quando alguém tenta fazer login.
+-- Procura pelo nome_login e devolve os dados do usuário mais o hash. O Flask compara o hash com a senha
+--   digitada usando check_password_hash, quem confere a senha é o Python e não o SQL.
+-- Se não voltar nenhuma linha, o nome_login não existe.
+-- Resultado (a senha_hash vem como um texto comprido, cortei aqui):
+--    id_usuario |   nome    |      email      | senha_hash
+--   ------------+-----------+-----------------+----------------------------
+--             1 | Ana Teste | ana@example.com | scrypt:32768:8:1$Zcb2cg...
+SELECT u.id_usuario, u.nome, u.email, l.senha_hash
+FROM login l
+JOIN usuario u ON u.id_usuario = l.id_usuario
+WHERE l.nome_login = 'ana_dev';
+
+-- ============================================================
+-- COMANDOS QUE O FLASK VAI USAR (só exemplos, estão comentados)
+-- ============================================================
+-- Aqui o %s é o espaço onde o Python coloca o valor (usando psycopg2 ou psycopg).
+-- Isso é importante: NUNCA montar o SQL juntando texto (f-string, +), porque dá SQL Injection
+--   (a gente viu isso na pergunta fact-014 do quiz). Passar os valores separados resolve.
+--
+-- Cadastro (dois comandos, os dois na mesma transação):
+--   INSERT INTO usuario (nome, email) VALUES (%s, %s) RETURNING id_usuario;
+--   INSERT INTO login (id_usuario, nome_login, senha_hash) VALUES (%s, %s, %s);
+--
+-- Depois de logar com sucesso:
+--   UPDATE login SET data_ultimo_acesso = CURRENT_TIMESTAMP WHERE id_usuario = %s;
+--
+-- Quando o jogador termina o quiz (tela final do script.js):
+--   INSERT INTO ranking (id_usuario, modo, acertos, total_perguntas) VALUES (%s, %s, %s, %s);
