@@ -46,7 +46,7 @@ button:hover {
 }
 
 header{
-    text-align: center;
+    text-align: right;
 
 }
 
@@ -145,16 +145,15 @@ main {
     justify-content: center;
     gap: 8px;
 }
-/*esses são as aparencias dos botões de dificuldades*/
-.dificuldades {
+/*essas são as aparencias dos botões de dificuldades*/
+.botoes-modo, .alternativas-container {
     display: flex;
-
     justify-content: center;
-    align-items: center;
     gap: 15px;
     flex-wrap: wrap;
     margin-top: 20px;
 }
+
 /*essa parte é da aparencia de cada botão de dificuldade*/
 .dificuldades button {
     min-width: 100px;
@@ -167,19 +166,19 @@ button:hover {
     transform: scale(1.05);
 }
 /*essa parte é do alto contraste*/
-body.alto-constraste {
+body.modo-acessivel {
     background-color: black;
     color: white;
 }
-body.alto-contraste h1,
-body.alto-contraste p {
+body.modo-acessivel h1,
+body.modo-acessivel p {
     color: yellow;
 }
-body.alto-contraste button {
+body.modo-acessivel button {
     background-color: black;
     color: yellow;
     border: 2px solid yellow;
 }
-body.alto-contraste button:hover {
+body.modo-acessivel button:hover {
     box-shadow: 0 0 15px yellow;
 }
