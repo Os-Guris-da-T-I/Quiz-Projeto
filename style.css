@@ -1,87 +1,153 @@
 @import url('https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap');
+
+/* =====================================================
+   VARIÁVEIS (mudamos as cores do tema por aqui)
+   ===================================================== */
+:root {
+    --fundo: #01030c;
+    --azul-escuro: #071449;
+    --azul: #4464f1;
+    --azul-claro: #8fa6ff;
+    --azul-texto: #cfd9ff;
+    --ciano: #00ffff;
+    --aqua: aquamarine;
+    --transicao: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --escala-fonte: 1; /* controlado pelo botão A- / A+ */
+}
+
+/* =====================================================
+   BASE
+   ===================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
-    padding:0;
-    background-color: #01030c;
-    font-size: medium;
+    padding: 0;
+    min-height: 100vh;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1rem * var(--escala-fonte));
     color: white;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(68, 100, 241, 0.18), transparent 45%),
+        radial-gradient(circle at 80% 90%, rgba(0, 255, 200, 0.10), transparent 45%),
+        var(--fundo);
+    background-attachment: fixed;
+    transition: background-color var(--transicao), color var(--transicao);
 }
 
 h1 {
-    background-color: #01030c;
-    color:aquamarine;
-    font-family: "Tektur", sans-serif;
+    margin: 0;
     padding: 1rem;
     text-align: center;
-    font-size: 400%;
-}
-p{
-    background-color: #01030c;
-    color:aquamarine;
     font-family: "Tektur", sans-serif;
-    padding: 0rem;
+    font-size: calc(clamp(2.2rem, 8vw, 4rem) * var(--escala-fonte));
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--aqua);
+    background: transparent;
+    animation: entrar-cima 0.8s ease both, brilho-titulo 3s ease-in-out infinite;
+}
+
+p {
+    margin: 0;
+    padding: 0;
     text-align: center;
-    font-size: x-large;
-
-}
-button{
-    transition: 0.5s;
-    background-color: #071449;
-    padding: 16px 32px;
-    color: #0d37f1;
-    font-size: medium;
-    border-color: #4464f1;
-    border-radius: 18px;
-    border: 2px solid #4464f1
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1.5rem * var(--escala-fonte));
+    line-height: 1.5;
+    color: var(--azul-texto);
+    background: transparent;
+    animation: entrar-cima 0.8s ease 0.2s both;
 }
 
-button {
-    transition: 0.3s;
-
-}
-
-button:hover {
-    box-shadow: 0 0 15px #00ffff;
-    transform: scale(1.05);
-}
-
-header{
+header {
     text-align: right;
-
 }
 
 main {
     padding: 2rem;
     display: flex;
     flex-direction: column;
-
+    animation: entrar-cima 0.8s ease 0.1s both;
 }
 
-.dificuldades {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
-.botao-acessibilidade {
-    width: 45px;
-    height: 45px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2px;
+/* =====================================================
+   BOTÕES (azul com neon ciano no hover)
+   ===================================================== */
+button {
+    position: relative;
+    overflow: hidden;
+    padding: 16px 32px;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1rem * var(--escala-fonte));
+    font-weight: 600;
+    color: var(--azul-texto);
+    background: linear-gradient(135deg, var(--azul-escuro), #0c1f6b);
+    border: 2px solid var(--azul);
+    border-radius: 18px;
+    cursor: pointer;
+    transition: transform var(--transicao), box-shadow var(--transicao),
+                border-color var(--transicao), color var(--transicao),
+                background var(--transicao), opacity var(--transicao);
 }
 
-.botao-acessibilidade img {
-    width: 25px;
-    height: 25px;
-    object-fit: contain;
+/* faixa de luz que desliza no hover */
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
 }
 
-/*tentativa de aruumar os erros*/
+/* neon dos botões */
+button:hover {
+    color: white;
+    border-color: var(--ciano);
+    background: linear-gradient(135deg, #0c1f6b, #1a3bd1);
+    box-shadow: 0 0 18px rgba(0, 255, 255, 0.7), 0 0 40px rgba(68, 100, 241, 0.4);
+    transform: translateY(-3px) scale(1.05);
+}
 
-/*para acessibilidade*/
+button:hover::before {
+    left: 130%;
+}
 
+button:active {
+    transform: translateY(0) scale(0.97);
+}
+
+button:focus-visible {
+    outline: 3px solid var(--ciano);
+    outline-offset: 4px;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* =====================================================
+   ACESSIBILIDADE (botão e menu)
+   ===================================================== */
 .header-acessibilidade {
     position: relative;
     display: flex;
@@ -89,64 +155,72 @@ main {
     padding: 10px 20px;
 }
 
-/*isso é do botão principal de acessibilidade*/
-
+/* botão principal de acessibilidade */
 .botao-acessibilidade {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-
     width: auto;
-        min-width: 200px;
-        height: 55px;
-
+    min-width: 200px;
+    height: 55px;
     padding: 10px 18px;
-        cursor: pointer;
-
-
+    cursor: pointer;
 }
 
-/* isso aqui é para colocar a imagem gigantesta de acessibilidade no botão*/
-.botao-acessibilidade img {
-    width: 24px;
-    height: 24px;
-        object-fit: contain;
-}
-
-/*isso é para o menu de acessibilidade*/
+/* menu de acessibilidade (fechado) */
 .menu-acessibilidade {
     display: none;
     position: absolute;
     top: 75px;
     right: 20px;
-    background-color: #071449;
-    border: 2px solid #4464f1;
+    min-width: 220px;
     padding: 15px;
     z-index: 1000;
-    min-width: 220px;
+    background: rgba(7, 20, 73, 0.95);
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--azul);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(68, 100, 241, 0.35);
 }
 
-/*isso aqui é para quando o menu estiver aberto*/
+/* menu aberto */
 .menu-acessibilidade.ativo {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    animation: abrir-menu 0.3s ease both;
 }
-/*esse é para quando o usuário estiver dentro do menu*/
+
+/* botões dentro do menu */
 .menu-acessibilidade button {
     cursor: pointer;
     padding: 10px;
 }
-/*essa é a parte de controle de fonte*/
+
+/* controle de fonte (A- / A+) */
 .controle-fonte {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
 }
-/*essas são as aparencias dos botões de dificuldades*/
-.botoes-modo, .alternativas-container {
+
+/* =====================================================
+   MODOS DE DIFICULDADE
+   ===================================================== */
+.dificuldades {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.dificuldades button {
+    min-width: 100px;
+    padding: 14px 24px;
+}
+
+.botoes-modo {
     display: flex;
     justify-content: center;
     gap: 15px;
@@ -154,31 +228,377 @@ main {
     margin-top: 20px;
 }
 
-/*essa parte é da aparencia de cada botão de dificuldade*/
-.dificuldades button {
-    min-width: 100px;
-    padding: 14px 24px;
-    cursor: pointer;
+/* entrada em cascata ("backwards" para não travar o hover) */
+.botoes-modo button,
+.alternativas-container button {
+    animation: entrar-cima 0.6s ease backwards;
 }
-/*neon dos botões*/
-button:hover {
-    box-shadow: 0 0 15px #00ffff;
-    transform: scale(1.05);
+
+.botoes-modo button:nth-child(2),
+.alternativas-container button:nth-child(2) { animation-delay: 0.1s; }
+.botoes-modo button:nth-child(3),
+.alternativas-container button:nth-child(3) { animation-delay: 0.2s; }
+.botoes-modo button:nth-child(4),
+.alternativas-container button:nth-child(4) { animation-delay: 0.3s; }
+
+#inicio-container,
+#quiz-container,
+#final {
+    animation: entrar-cima 0.6s ease both;
 }
-/*essa parte é do alto contraste*/
+
+/* =====================================================
+   PERGUNTA, TIMER E DICA
+   ===================================================== */
+.pergunta-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+#question {
+    flex: 1;
+    margin: 0;
+    text-align: center;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1.6rem * var(--escala-fonte));
+    line-height: 1.3;
+    color: #fff;
+}
+
+#timer-display {
+    min-width: 110px;
+    padding: 8px 14px;
+    text-align: center;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1.2rem * var(--escala-fonte));
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ciano);
+    background: rgba(7, 20, 73, 0.8);
+    border: 2px solid var(--azul);
+    border-radius: 14px;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+/* últimos 10 segundos */
+#timer-display.urgente {
+    color: #ff8a98;
+    border-color: #ff6b7a;
+    animation: pulsar 1s ease-in-out infinite;
+}
+
+.icon-btn {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: calc(1.3rem * var(--escala-fonte));
+}
+
+#textoDica {
+    max-width: 700px;
+    margin: 8px auto 0;
+    padding: 12px 18px;
+    font-size: calc(1.15rem * var(--escala-fonte));
+    color: #ffe9a8;
+    background: rgba(255, 214, 102, 0.08);
+    border: 1px dashed rgba(255, 214, 102, 0.65);
+    border-radius: 14px;
+}
+
+/* =====================================================
+   ALTERNATIVAS (certo / errado)
+   ===================================================== */
+.alternativas-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.alternativa {
+    min-height: 72px;
+    padding: 18px 22px;
+    line-height: 1.35;
+    text-align: center;
+}
+
+/* depois de responder, sem hover nos botões travados */
+.alternativa:disabled {
+    pointer-events: none;
+}
+
+.alternativa:disabled:not(.correta):not(.errada) {
+    opacity: 0.5;
+}
+
+/* sempre com ícone além da cor (ajuda quem não distingue cores) */
+.alternativa.correta,
+.alternativa.errada {
+    opacity: 1;
+    color: #fff;
+    transform: none;
+}
+
+.alternativa.correta {
+    background: linear-gradient(135deg, #04402b, #0b8a5a);
+    border-color: #3dffa0;
+    box-shadow: 0 0 22px rgba(61, 255, 160, 0.55);
+    animation: pop 0.45s ease;
+}
+
+.alternativa.correta::after {
+    content: " ✔";
+}
+
+.alternativa.errada {
+    background: linear-gradient(135deg, #4a0a18, #962038);
+    border-color: #ff6b7a;
+    box-shadow: 0 0 22px rgba(255, 107, 122, 0.5);
+    animation: tremer 0.4s ease;
+}
+
+.alternativa.errada::after {
+    content: " ✖";
+}
+
+/* =====================================================
+   EXPLICAÇÃO E TELA FINAL
+   ===================================================== */
+#areaExplicacao {
+    max-width: 760px;
+    margin: 24px auto 0;
+    padding: 18px 22px;
+    text-align: center;
+    background: rgba(7, 20, 73, 0.7);
+    border: 2px solid var(--azul);
+    border-radius: 16px;
+    animation: entrar-cima 0.5s ease both;
+}
+
+#tituloResultado {
+    margin: 0 0 8px;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1.5rem * var(--escala-fonte));
+}
+
+#tituloResultado.resultado-certo { color: #3dffa0; }
+#tituloResultado.resultado-errado { color: #ff8a98; }
+
+#textoExplicacao {
+    font-size: calc(1.15rem * var(--escala-fonte));
+    color: #fff;
+}
+
+#btnProxima {
+    display: block;
+    margin: 24px auto 0;
+}
+
+#final {
+    text-align: center;
+}
+
+#final h2 {
+    margin: 8px 0;
+    font-family: "Tektur", sans-serif;
+    font-size: calc(1.8rem * var(--escala-fonte));
+    color: var(--ciano);
+}
+
+.emoji-final {
+    display: block;
+    margin: 16px 0;
+    font-size: 5rem;
+    animation: pop 0.6s ease 0.2s both;
+}
+
+#btnReiniciar {
+    margin-top: 24px;
+}
+
+/* =====================================================
+   ALTO CONTRASTE (preto + amarelo)
+   ===================================================== */
 body.modo-acessivel {
-    background-color: black;
-    color: white;
+    background: #000;
+    background-attachment: scroll;
+    color: #fff;
 }
+
 body.modo-acessivel h1,
 body.modo-acessivel p {
-    color: yellow;
+    color: #ffff00;
+    animation: entrar-cima 0.8s ease both; /* sem brilho pulsante */
+    text-shadow: none;
 }
+
 body.modo-acessivel button {
-    background-color: black;
-    color: yellow;
-    border: 2px solid yellow;
+    background: #000;
+    color: #ffff00;
+    border: 3px solid #ffff00;
 }
+
+body.modo-acessivel button::before {
+    display: none;
+}
+
 body.modo-acessivel button:hover {
-    box-shadow: 0 0 15px yellow;
+    background: #ffff00;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 20px #ffff00;
+}
+
+body.modo-acessivel button:focus-visible {
+    outline: 4px solid #fff;
+    outline-offset: 4px;
+}
+
+body.modo-acessivel .menu-acessibilidade {
+    background: #000;
+    border: 3px solid #ffff00;
+    backdrop-filter: none;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+}
+
+body.modo-acessivel #question,
+body.modo-acessivel #final h2,
+body.modo-acessivel #tituloResultado {
+    color: #ffff00;
+}
+
+body.modo-acessivel #textoExplicacao {
+    color: #fff;
+}
+
+body.modo-acessivel #timer-display {
+    color: #ffff00;
+    background: #000;
+    border: 3px solid #ffff00;
+}
+
+body.modo-acessivel #timer-display.urgente {
+    color: #fff;
+    border-color: #fff;
+}
+
+body.modo-acessivel #textoDica {
+    color: #ffff00;
+    background: #000;
+    border: 2px dashed #ffff00;
+}
+
+body.modo-acessivel #areaExplicacao {
+    background: #000;
+    border: 3px solid #ffff00;
+}
+
+/* certo = fundo branco, errado = tracejado + riscado: não depende de cor */
+body.modo-acessivel .alternativa.correta {
+    background: #fff;
+    color: #000;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px #000, 0 0 0 6px #fff;
+}
+
+body.modo-acessivel .alternativa.errada {
+    background: #000;
+    color: #fff;
+    border: 3px dashed #fff;
+    text-decoration: line-through;
+    box-shadow: none;
+}
+
+/* =====================================================
+   ANIMAÇÕES
+   ===================================================== */
+@keyframes entrar-cima {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes abrir-menu {
+    from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes brilho-titulo {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(127, 255, 212, 0.5),
+                     0 0 25px rgba(68, 100, 241, 0.4);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(127, 255, 212, 0.9),
+                     0 0 45px rgba(68, 100, 241, 0.8);
+    }
+}
+
+@keyframes pop {
+    0%   { transform: scale(0.9); }
+    60%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+@keyframes tremer {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+}
+
+@keyframes pulsar {
+    0%, 100% { box-shadow: 0 0 0 rgba(255, 107, 122, 0); }
+    50%      { box-shadow: 0 0 18px rgba(255, 107, 122, 0.8); }
+}
+
+/* =====================================================
+   RESPONSIVO
+   ===================================================== */
+@media (max-width: 700px) {
+    main {
+        padding: 1rem;
+    }
+
+    p {
+        font-size: calc(1.25rem * var(--escala-fonte));
+    }
+
+    .dificuldades {
+        flex-wrap: wrap;
+    }
+
+    .botao-acessibilidade {
+        min-width: 160px;
+    }
+
+    .alternativas-container {
+        grid-template-columns: 1fr;
+    }
+
+    .pergunta-header {
+        flex-wrap: wrap;
+    }
+
+    #question {
+        order: 3;
+        flex-basis: 100%;
+    }
+}
+
+/* =====================================================
+   REDUZIR MOVIMENTO (preferência do sistema)
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
