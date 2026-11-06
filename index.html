@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz de TI - Conhecimentos Gerais</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-adicional.css">
 </head>
 <body>
+    <!-- Acessibilidade -->
     <header class="header-acessibilidade">
-        <button id="btnAcessibilidade" title="Ativar/Desativar Alto Contraste">(Imagem do icone) Acessibilidade</button>
+        <button id="btnAcessibilidade" class="botao-acessibilidade"
+                title="Opções de acessibilidade"
+                aria-haspopup="true" aria-expanded="false" aria-controls="menuAcessibilidade">
+            <span aria-hidden="true">♿</span> Acessibilidade
+        </button>
+
+        <div id="menuAcessibilidade" class="menu-acessibilidade" role="group" aria-label="Opções de acessibilidade">
+            <button id="btnContraste" aria-pressed="false">🌓 Alto contraste</button>
+
+            <div class="controle-fonte">
+                <button id="btnFonteMenos" aria-label="Diminuir fonte">A-</button>
+                <button id="btnFonteMais" aria-label="Aumentar fonte">A+</button>
+            </div>
+
+            <button id="btnResetarAcessibilidade">🔄 Restaurar</button>
+        </div>
     </header>
 
     <main class="container">
@@ -26,17 +42,17 @@
 
         <!-- Área Principal do Quiz -->
         <div id="quiz-container" style="display: none;">
-            
+
             <div class="pergunta-header">
                 <!-- Timer no canto esquerdo -->
-                <div id="timer-display" style="display: none;">⏱️ <span id="tempo">01:50</span></div>
-                
+                <div id="timer-display" style="display: none;">⏱️ <span id="tempo">1:50</span></div>
+
                 <h2 id="question">Título da Pergunta</h2>
-                
+
                 <!-- Botão de dica no canto direito -->
-                <button id="btnDica" class="icon-btn" title="Ver dica">❓</button>
+                <button id="btnDica" class="icon-btn" title="Ver dica" aria-label="Mostrar dica" aria-expanded="false">❓</button>
             </div>
-            
+
             <p id="textoDica" style="display: none;"></p>
 
             <div class="alternativas-container">
@@ -46,7 +62,7 @@
                 <button class="alternativa" id="alternative4"></button>
             </div>
 
-            <div id="areaExplicacao" style="display: none;">
+            <div id="areaExplicacao" role="status" aria-live="polite" style="display: none;">
                 <h3 id="tituloResultado"></h3>
                 <p id="textoExplicacao"></p>
             </div>
@@ -57,13 +73,15 @@
         <!-- Tela Final -->
         <div id="final" style="display: none;">
             <h1>Quiz finalizado! 🏆</h1>
-            <h2 id="finalScore">Sua pontuação: </h2>
+            <h2 id="finalScore"></h2>
             <p id="mensagemFinal"></p>
-            <img id="emojiFinal" src="" alt="Emoji de resultado" />
-            <button id="btnReiniciar" style="margin-top: 20px;">Voltar ao Início</button>
+            <span id="emojiFinal" class="emoji-final" aria-hidden="true"></span>
+            <button id="btnReiniciar">Voltar ao Início</button>
         </div>
     </main>
 
     <script src="script.js"></script>
 </body>
 </html>
+
+
