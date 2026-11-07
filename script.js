@@ -125,51 +125,117 @@ const perguntas = [
 ];
 
 // ==========================================
-// 2. MAPEAMENTO DOS ELEMENTOS HTML
+// 2. CONFIGURAÇÕES GERAIS
 // ==========================================
-const inicioContainer = document.getElementById("inicio-container");
-const quizContainer = document.getElementById("quiz-container");
-const questionTitle = document.getElementById("question");
-const btnDica = document.getElementById("btnDica");
-const textoDica = document.getElementById("textoDica");
-const areaExplicacao = document.getElementById("areaExplicacao");
-const tituloResultado = document.getElementById("tituloResultado");
-const textoExplicacao = document.getElementById("textoExplicacao");
-const btnProxima = document.getElementById("btnProxima");
-const timerDisplay = document.getElementById("timer-display");
-const spanTempo = document.getElementById("tempo");
-const finalScreen = document.getElementById("final");
-const finalScore = document.getElementById("finalScore");
-const mensagemFinal = document.getElementById("mensagemFinal");
-const emojiFinal = document.getElementById("emojiFinal");
-const btnReiniciar = document.getElementById("btnReiniciar");
+const API_URL = "http://127.0.0.1:5000"; // API Flask do projeto (se estiver desligada, o site usa o modo local)
+
+const TEMPOS = { facil: 90, normal: 40, dificil: 15 }; // segundos por pergunta
+const NOMES_MODO = { facil: "Fácil", normal: "Normal", dificil: "Difícil" };
+
+const AVATARES = [
+    { kanji: "侍", rotulo: "Samurai", tema: "escuro" },
+    { kanji: "猫", rotulo: "Gato", tema: "claro" },
+    { kanji: "狐", rotulo: "Raposa", tema: "escuro" },
+    { kanji: "龍", rotulo: "Dragão", tema: "claro" },
+    { kanji: "桜", rotulo: "Cerejeira", tema: "claro" },
+    { kanji: "月", rotulo: "Lua", tema: "escuro" },
+    { kanji: "鬼", rotulo: "Oni", tema: "escuro" },
+    { kanji: "鯉", rotulo: "Carpa", tema: "claro" }
+];
+
+const CRIADORES = [
+    { nome: "Matheus Pentogennis", user: "mwtheuskkj" },
+    { nome: "Gustavo Naves", user: "Massarubash" },
+    { nome: "João Guimarães", user: "jaobom006" },
+    { nome: "Gabriel Gonçalves", user: "midasrei68-dev" },
+    { nome: "Lucas Teles", user: "Luucasy" },
+    { nome: "Lucas da Graça", user: "lucasgracaleandro-arch" }
+];
+
+const CORES_COROA = {
+    1: { fill: "#ffd54a", stroke: "#8a6508", nome: "Ouro" },
+    2: { fill: "#dfe3e8", stroke: "#5f6b78", nome: "Prata" },
+    3: { fill: "#d98a4a", stroke: "#6e3f14", nome: "Bronze" }
+};
+
+// ==========================================
+// 3. MAPEAMENTO DOS ELEMENTOS HTML
+// ==========================================
+const $ = (id) => document.getElementById(id);
+
+const splash = $("splash");
+const telaLogin = $("tela-login");
+const appEl = $("app");
+const rodapeCriadores = $("rodapeCriadores");
+
+const formLogin = $("formLogin");
+const inputNome = $("inputNome");
+const previaNome = $("previaNome");
+const erroLogin = $("erroLogin");
+
+const inicioContainer = $("inicio-container");
+const quizContainer = $("quiz-container");
+const questionTitle = $("question");
+const btnDica = $("btnDica");
+const textoDica = $("textoDica");
+const areaExplicacao = $("areaExplicacao");
+const tituloResultado = $("tituloResultado");
+const textoExplicacao = $("textoExplicacao");
+const btnProxima = $("btnProxima");
+const timerDisplay = $("timer-display");
+const spanTempo = $("tempo");
+const barraTempo = $("barraTempo");
+const finalScreen = $("final");
+const finalScore = $("finalScore");
+const mensagemFinal = $("mensagemFinal");
+const emojiFinal = $("emojiFinal");
+const btnReiniciar = $("btnReiniciar");
 const btnModos = document.querySelectorAll(".btn-modo");
+const gradeInicio = $("gradeInicio");
+const btnSair = $("btnSair");
+const rotuloModo = $("rotuloModo");
 
 const btnAlternativas = [
-    document.getElementById("alternative1"),
-    document.getElementById("alternative2"),
-    document.getElementById("alternative3"),
-    document.getElementById("alternative4")
+    $("alternative1"),
+    $("alternative2"),
+    $("alternative3"),
+    $("alternative4")
 ];
 
 // Acessibilidade
-const btnAcessibilidade = document.getElementById("btnAcessibilidade");
-const menuAcessibilidade = document.getElementById("menuAcessibilidade");
-const btnContraste = document.getElementById("btnContraste");
-const btnFonteMais = document.getElementById("btnFonteMais");
-const btnFonteMenos = document.getElementById("btnFonteMenos");
-const btnResetarAcessibilidade = document.getElementById("btnResetarAcessibilidade");
+const btnAcessibilidade = $("btnAcessibilidade");
+const menuAcessibilidade = $("menuAcessibilidade");
+const btnContraste = $("btnContraste");
+const btnFonteMais = $("btnFonteMais");
+const btnFonteMenos = $("btnFonteMenos");
+const btnResetarAcessibilidade = $("btnResetarAcessibilidade");
+
+// Abas, perfil, ranking, pop-ups
+const abasBtns = document.querySelectorAll(".aba");
+const btnPerfil = $("btnPerfil");
+const modalPerfil = $("modalPerfil");
+const modalSair = $("modalSair");
+const modalGithub = $("modalGithub");
+const listaRanking = $("listaRanking");
+const rankingVazio = $("rankingVazio");
 
 // ==========================================
-// 3. VARIÁVEIS DE ESTADO
+// 4. VARIÁVEIS DE ESTADO
 // ==========================================
 let indiceAtual = 0;
 let pontuacao = 0;
 let modoAtual = "normal";
 let timer = null;
 let tempoRestante = 0;
+let tempoTotal = 0;
+let respondida = false;
+let jogando = false;
 
-const TEMPO_DIFICIL = 110; // 1 minuto e 50 segundos
+let usuario = null;          // { id, nome_login, foto }
+let appAberto = false;
+let bancoOnline = null;      // null = ainda não testado
+let filtroRanking = "geral";
+let fotoTemp = null;
 
 const ESCALA_MIN = 0.8;
 const ESCALA_MAX = 1.6;
@@ -177,21 +243,500 @@ const ESCALA_PASSO = 0.1;
 
 let escalaFonte = 1;
 let altoContraste = false;
+let tema = "escuro";
+let daltonismo = "nenhum";
 
 // ==========================================
-// 4. FUNÇÕES AUXILIARES
+// 5. FUNÇÕES AUXILIARES
 // ==========================================
 function mostrar(elemento, visivel) {
-    elemento.style.display = visivel ? "block" : "none";
+    elemento.hidden = !visivel;
+}
+
+function el(tag, classe, texto) {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto !== undefined) e.textContent = texto;
+    return e;
+}
+
+function lerLS(chave, padrao) {
+    try {
+        const v = JSON.parse(localStorage.getItem(chave));
+        return v === null || v === undefined ? padrao : v;
+    } catch (e) {
+        return padrao;
+    }
+}
+
+function gravarLS(chave, valor) {
+    try {
+        localStorage.setItem(chave, JSON.stringify(valor));
+    } catch (e) { /* o navegador pode bloquear o armazenamento */ }
+}
+
+// "Matheus P." -> "matheus_p" (mesma regra da tabela login: a-z, 0-9 e _, de 3 a 20)
+function normalizarNome(texto) {
+    return texto
+        .normalize("NFD").replace(/[̀-ͯ]/g, "")
+        .toLowerCase().trim()
+        .replace(/\s+/g, "_")
+        .replace(/[^a-z0-9_]/g, "")
+        .slice(0, 20);
+}
+
+function nomeValido(nome) {
+    return /^[a-z0-9_]{3,20}$/.test(nome);
+}
+
+// ---------- pop-ups com fade-in / fade-out ----------
+let focoAntesDoModal = null;
+
+function abrirModal(modal) {
+    clearTimeout(modal._t);
+    focoAntesDoModal = document.activeElement;
+    modal.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add("visivel")));
+    const foco = modal.querySelector("[data-foco]") || modal.querySelector("button");
+    setTimeout(() => foco && foco.focus({ preventScroll: true }), 60);
+}
+
+function fecharModal(modal, devolverFoco = true) {
+    modal.classList.remove("visivel");
+    clearTimeout(modal._t);
+    modal._t = setTimeout(() => { modal.hidden = true; }, 290);
+    if (devolverFoco && focoAntesDoModal && document.contains(focoAntesDoModal)) {
+        focoAntesDoModal.focus({ preventScroll: true });
+    }
+}
+
+// ---------- avatar e coroa ----------
+function criarAvatar(foto, tam = 48) {
+    const a = el("span", "avatar");
+    a.style.setProperty("--tam", tam + "px");
+
+    if (typeof foto === "string" && /^data:image\/(png|jpeg|webp|gif);base64,/.test(foto)) {
+        const img = new Image();
+        img.alt = "";
+        img.src = foto;
+        a.appendChild(img);
+    } else {
+        const preset = AVATARES.find(p => "preset:" + p.kanji === foto) || AVATARES[0];
+        a.textContent = preset.kanji;
+        a.classList.add("avatar-" + preset.tema);
+    }
+    return a;
+}
+
+function criarCoroa(pos) {
+    const c = CORES_COROA[pos];
+    const wrap = el("span", "coroa");
+    wrap.title = `Coroa de ${c.nome} - ${pos}º lugar`;
+    wrap.innerHTML =
+        `<svg viewBox="0 0 40 30" role="img" aria-label="Coroa de ${c.nome}, ${pos}º lugar">` +
+        `<path d="M3 25 L6 8 L14 17 L20 4 L26 17 L34 8 L37 25 Z" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" stroke-linejoin="round"/>` +
+        `<rect x="3" y="25" width="34" height="4" rx="1" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2"/>` +
+        `<text x="20" y="23" text-anchor="middle" font-size="10" font-weight="800" font-family="sans-serif" fill="${c.stroke}">${pos}</text>` +
+        `</svg>`;
+    return wrap;
 }
 
 // ==========================================
-// 5. LÓGICA DO QUIZ
+// 6. BANCO DE DADOS (API Flask + modo local de reserva)
+// ==========================================
+function atualizarStatusBanco() {
+    let texto = "Conectando ao banco de dados…";
+    if (bancoOnline === true) texto = "● Banco de dados conectado";
+    if (bancoOnline === false) texto = "○ Sem conexão com o banco: ranking salvo neste navegador";
+    document.querySelectorAll("[data-status]").forEach(e => { e.textContent = texto; });
+}
+
+async function chamarAPI(caminho, opcoes = {}) {
+    const ctrl = new AbortController();
+    const limite = setTimeout(() => ctrl.abort(), 3000);
+    try {
+        const resp = await fetch(API_URL + caminho, {
+            headers: { "Content-Type": "application/json" },
+            ...opcoes,
+            signal: ctrl.signal
+        });
+        clearTimeout(limite);
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        bancoOnline = true;
+        atualizarStatusBanco();
+        return await resp.json();
+    } catch (e) {
+        clearTimeout(limite);
+        bancoOnline = false;
+        atualizarStatusBanco();
+        return null;
+    }
+}
+
+// fotos e partidas guardadas no navegador (reserva e cache)
+function fotoLocal(nomeLogin) {
+    return lerLS("gq_fotos", {})[nomeLogin] || null;
+}
+
+function salvarFotoLocal(nomeLogin, foto) {
+    const fotos = lerLS("gq_fotos", {});
+    fotos[nomeLogin] = foto;
+    gravarLS("gq_fotos", fotos);
+}
+
+function normalizarPartida(p) {
+    const jogador = p.jogador ?? p.nome_login ?? "?";
+    return {
+        jogador,
+        foto: p.foto || fotoLocal(jogador),
+        modo: p.modo,
+        acertos: Number(p.acertos) || 0,
+        total: Number(p.total_perguntas ?? p.total) || perguntas.length,
+        data: p.data_partida ?? p.data ?? ""
+    };
+}
+
+async function buscarRanking(filtro) {
+    const consulta = filtro && filtro !== "geral" ? "?modo=" + filtro : "";
+    const resp = await chamarAPI("/ranking" + consulta);
+    let lista;
+    if (Array.isArray(resp)) {
+        lista = resp.map(normalizarPartida);
+    } else {
+        lista = lerLS("gq_partidas", []).map(normalizarPartida);
+    }
+    return lista.filter(p => filtro === "geral" || !filtro || p.modo === filtro);
+}
+
+// melhor partida de cada jogador (mais acertos; empate: quem fez primeiro)
+function melhoresPorJogador(partidas) {
+    const mapa = new Map();
+    partidas.forEach(p => {
+        const atual = mapa.get(p.jogador);
+        if (!atual || p.acertos > atual.acertos ||
+            (p.acertos === atual.acertos && String(p.data) < String(atual.data))) {
+            mapa.set(p.jogador, p);
+        }
+    });
+    return [...mapa.values()].sort((a, b) =>
+        b.acertos - a.acertos || String(a.data).localeCompare(String(b.data)));
+}
+
+async function salvarPartida(modo, acertos, total) {
+    // cópia local (também serve de reserva se a API estiver desligada)
+    const locais = lerLS("gq_partidas", []);
+    locais.push({
+        jogador: usuario.nome_login, foto: usuario.foto, modo, acertos,
+        total_perguntas: total, data_partida: new Date().toISOString()
+    });
+    gravarLS("gq_partidas", locais.slice(-200));
+
+    if (usuario.id !== null) {
+        await chamarAPI("/ranking", {
+            method: "POST",
+            body: JSON.stringify({ id_usuario: usuario.id, modo, acertos, total_perguntas: total })
+        });
+    }
+}
+
+async function atualizarRanking() {
+    const partidas = await buscarRanking(filtroRanking);
+    const lista = melhoresPorJogador(partidas).slice(0, 10);
+
+    listaRanking.replaceChildren(...lista.map((r, i) => {
+        const pos = i + 1;
+        const eVoce = usuario && r.jogador === usuario.nome_login;
+        const li = el("li", "item-ranking" + (eVoce ? " voce" : ""));
+        li.appendChild(el("span", "pos", pos + "º"));
+
+        const wrap = el("span", "avatar-wrap");
+        wrap.appendChild(criarAvatar(r.foto, 44));
+        if (pos <= 3) wrap.appendChild(criarCoroa(pos));
+        li.appendChild(wrap);
+
+        const info = el("span", "info");
+        info.appendChild(el("strong", "nome", r.jogador));
+        info.appendChild(el("small", "modo-tag", (NOMES_MODO[r.modo] || r.modo) + (eVoce ? " · você" : "")));
+        li.appendChild(info);
+
+        li.appendChild(el("span", "pontos", `${r.acertos}/${r.total}`));
+        return li;
+    }));
+
+    rankingVazio.hidden = lista.length > 0;
+    return lista;
+}
+
+// ==========================================
+// 7. ABERTURA, LOGIN E PERFIL
+// ==========================================
+function iniciarSplash() {
+    const reduzido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let encerrada = false;
+
+    const encerrar = () => {
+        if (encerrada) return;
+        encerrada = true;
+        splash.classList.add("saindo");
+        setTimeout(() => {
+            splash.hidden = true;
+            mostrarLogin();
+        }, 700);
+    };
+
+    setTimeout(encerrar, reduzido ? 1400 : 4300);
+    splash.addEventListener("click", encerrar);
+    document.addEventListener("keydown", (e) => {
+        if (!splash.hidden && (e.key === "Enter" || e.key === " " || e.key === "Escape")) encerrar();
+    });
+}
+
+function mostrarLogin() {
+    appAberto = false;
+    mostrar(appEl, false);
+    mostrar(telaLogin, true);
+    atualizarRodape();
+    inputNome.value = lerLS("gq_ultimo_usuario", "");
+    atualizarPreviaNome();
+    inputNome.focus({ preventScroll: true });
+}
+
+function atualizarPreviaNome() {
+    const n = normalizarNome(inputNome.value);
+    previaNome.textContent = n || "—";
+}
+
+async function tentarEntrar(e) {
+    e.preventDefault();
+    const nome = normalizarNome(inputNome.value);
+
+    if (!nomeValido(nome)) {
+        erroLogin.textContent = "Use de 3 a 20 letras, números ou _ (sem acentos).";
+        inputNome.focus();
+        return;
+    }
+    erroLogin.textContent = "";
+
+    const btn = $("btnEntrar");
+    btn.disabled = true;
+    btn.textContent = "Entrando…";
+
+    // login no banco (cria o usuário se não existir)
+    const resp = await chamarAPI("/login", {
+        method: "POST",
+        body: JSON.stringify({ nome_login: nome })
+    });
+
+    usuario = {
+        id: resp && resp.id_usuario !== undefined ? resp.id_usuario : null,
+        nome_login: nome,
+        foto: (resp && resp.foto) || fotoLocal(nome)
+    };
+    gravarLS("gq_ultimo_usuario", nome);
+
+    btn.disabled = false;
+    btn.textContent = "Entrar";
+
+    abrirPerfil(true);
+}
+
+function abrirPerfil(primeiraVez) {
+    fotoTemp = usuario.foto || "preset:" + AVATARES[0].kanji;
+    $("perfilNome").textContent = usuario.nome_login;
+    $("erroFoto").textContent = "";
+    $("btnPerfilCancelar").hidden = primeiraVez;
+    atualizarSelecaoPerfil();
+    abrirModal(modalPerfil);
+}
+
+function atualizarSelecaoPerfil() {
+    $("perfilPrevia").replaceChildren(criarAvatar(fotoTemp, 96));
+    document.querySelectorAll(".avatar-opcao").forEach(b => {
+        b.setAttribute("aria-pressed", b.dataset.foto === fotoTemp);
+    });
+}
+
+function montarGradeAvatares() {
+    $("gradeAvatares").replaceChildren(...AVATARES.map(a => {
+        const b = el("button", "avatar-opcao");
+        b.type = "button";
+        b.dataset.foto = "preset:" + a.kanji;
+        b.setAttribute("aria-label", "Avatar " + a.rotulo);
+        b.appendChild(criarAvatar("preset:" + a.kanji, 56));
+        b.addEventListener("click", () => {
+            fotoTemp = b.dataset.foto;
+            atualizarSelecaoPerfil();
+        });
+        return b;
+    }));
+}
+
+function redimensionarImagem(arquivo) {
+    return new Promise((ok, falhou) => {
+        const url = URL.createObjectURL(arquivo);
+        const img = new Image();
+        img.onload = () => {
+            const t = 160;
+            const canvas = document.createElement("canvas");
+            canvas.width = canvas.height = t;
+            const lado = Math.min(img.width, img.height);
+            const sx = (img.width - lado) / 2;
+            const sy = (img.height - lado) / 2;
+            canvas.getContext("2d").drawImage(img, sx, sy, lado, lado, 0, 0, t, t);
+            URL.revokeObjectURL(url);
+            ok(canvas.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); falhou(new Error("imagem inválida")); };
+        img.src = url;
+    });
+}
+
+async function aoEscolherFoto() {
+    const inputFoto = $("inputFoto");
+    const erro = $("erroFoto");
+    const arquivo = inputFoto.files[0];
+    erro.textContent = "";
+    if (!arquivo) return;
+
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(arquivo.type)) {
+        erro.textContent = "Escolha uma imagem PNG, JPG, WEBP ou GIF.";
+    } else if (arquivo.size > 8 * 1024 * 1024) {
+        erro.textContent = "A imagem é grande demais (máximo de 8 MB).";
+    } else {
+        try {
+            fotoTemp = await redimensionarImagem(arquivo);
+            atualizarSelecaoPerfil();
+        } catch (e) {
+            erro.textContent = "Não foi possível abrir essa imagem.";
+        }
+    }
+    inputFoto.value = "";
+}
+
+function confirmarPerfil() {
+    usuario.foto = fotoTemp;
+    salvarFotoLocal(usuario.nome_login, fotoTemp);
+    if (usuario.id !== null) {
+        chamarAPI(`/usuario/${usuario.id}/foto`, { method: "PUT", body: JSON.stringify({ foto: fotoTemp }) });
+    }
+    fecharModal(modalPerfil, false);
+    atualizarChip();
+    if (!appAberto) entrarNoApp(); else atualizarRanking();
+}
+
+function atualizarChip() {
+    $("chipAvatar").replaceChildren(criarAvatar(usuario.foto, 34));
+    $("chipNome").textContent = usuario.nome_login;
+    $("saudacaoNome").textContent = usuario.nome_login;
+}
+
+function entrarNoApp() {
+    appAberto = true;
+    mostrar(telaLogin, false);
+    mostrar(appEl, true);
+    atualizarChip();
+    irParaAba("inicio");
+    voltarAoInicio();
+    atualizarRodape();
+}
+
+function sairDaConta() {
+    clearInterval(timer);
+    jogando = false;
+    usuario = null;
+    mostrarLogin();
+}
+
+// ==========================================
+// 8. ABAS E RODAPÉ DOS CRIADORES
+// ==========================================
+function irParaAba(nome) {
+    abasBtns.forEach(b => {
+        const ativa = b.dataset.aba === nome;
+        b.classList.toggle("ativa", ativa);
+        b.setAttribute("aria-selected", ativa);
+    });
+    ["inicio", "config", "sobre"].forEach(a => mostrar($("aba-" + a), a === nome));
+    if (nome === "inicio" && appAberto) atualizarRanking();
+}
+
+function bloquearNavegacao(bloquear) {
+    abasBtns.forEach(b => { b.disabled = bloquear; });
+    btnPerfil.disabled = bloquear;
+}
+
+function atualizarRodape() {
+    const telaVisivel = !telaLogin.hidden || (appAberto && !jogando);
+    mostrar(rodapeCriadores, telaVisivel);
+}
+
+function montarCriadores() {
+    const trilho = $("marqueeTrilho");
+
+    const montarGrupo = (copia) => {
+        const grupo = el("div", "marquee-grupo");
+        if (copia) grupo.setAttribute("aria-hidden", "true");
+
+        CRIADORES.forEach(c => {
+            const b = el("button", "criador");
+            b.type = "button";
+            if (copia) b.tabIndex = -1;
+            b.setAttribute("aria-label", `${c.nome}, perfil no GitHub @${c.user}`);
+
+            const foto = el("span", "criador-foto");
+            const img = new Image();
+            img.alt = "";
+            img.referrerPolicy = "no-referrer";
+            img.src = `https://github.com/${encodeURIComponent(c.user)}.png?size=120`;
+            img.addEventListener("error", () => { foto.replaceChildren(document.createTextNode(c.nome[0])); });
+            foto.appendChild(img);
+
+            const texto = el("span", "criador-texto");
+            texto.appendChild(el("strong", "", c.nome));
+            texto.appendChild(el("span", "criador-user", "@" + c.user));
+
+            b.append(foto, texto);
+            b.addEventListener("click", () => abrirGithub(c));
+            grupo.appendChild(b);
+        });
+        return grupo;
+    };
+
+    // dois grupos iguais: a animação anda -50% e recomeça sem pulo
+    trilho.append(montarGrupo(false), montarGrupo(true));
+}
+
+function abrirGithub(c) {
+    const av = el("span", "criador-foto");
+    av.style.cssText = "width:6rem;height:6rem;font-size:2.4rem";
+    const img = new Image();
+    img.alt = "";
+    img.referrerPolicy = "no-referrer";
+    img.src = `https://github.com/${encodeURIComponent(c.user)}.png?size=240`;
+    img.addEventListener("error", () => { av.replaceChildren(document.createTextNode(c.nome[0])); });
+    av.appendChild(img);
+
+    $("ghAvatar").replaceChildren(av);
+    $("ghNome").textContent = c.nome;
+    $("ghUser").textContent = "@" + c.user + " no GitHub";
+    $("ghLink").href = `https://github.com/${encodeURIComponent(c.user)}`;
+    abrirModal(modalGithub);
+}
+
+// ==========================================
+// 9. LÓGICA DO QUIZ
 // ==========================================
 function iniciarQuiz(modo) {
     modoAtual = modo;
     indiceAtual = 0;
     pontuacao = 0;
+    jogando = true;
+
+    gradeInicio.classList.add("jogando");
+    bloquearNavegacao(true);
+    atualizarRodape();
+
+    rotuloModo.textContent = "Modo " + NOMES_MODO[modo];
 
     mostrar(inicioContainer, false);
     mostrar(finalScreen, false);
@@ -202,10 +747,12 @@ function iniciarQuiz(modo) {
 
 function carregarPergunta() {
     clearInterval(timer);
+    respondida = false;
+    quizContainer.classList.remove("quiz-borrado");
     const dados = perguntas[indiceAtual];
 
     questionTitle.innerText = `(${indiceAtual + 1}/${perguntas.length}) ${dados.pergunta}`;
-    textoDica.innerText = "💡 Dica: " + dados.dica;
+    textoDica.innerText = "Dica: " + dados.dica;
 
     mostrar(areaExplicacao, false);
     mostrar(btnProxima, false);
@@ -215,17 +762,17 @@ function carregarPergunta() {
     if (modoAtual === "facil") {
         mostrar(textoDica, true);      // dica sempre visível
         mostrar(btnDica, false);
-        mostrar(timerDisplay, false);
     } else if (modoAtual === "normal") {
-        mostrar(textoDica, false);     // dica só quando clicar no ❓
+        mostrar(textoDica, false);     // dica só quando clicar no ?
         mostrar(btnDica, true);
-        mostrar(timerDisplay, false);
     } else if (modoAtual === "dificil") {
-        mostrar(textoDica, false);     // sem dica, com tempo
+        mostrar(textoDica, false);     // sem dica
         mostrar(btnDica, false);
-        mostrar(timerDisplay, true);
-        iniciarTimer(TEMPO_DIFICIL);
     }
+
+    // o cronômetro roda em todos os modos (tempo por pergunta)
+    mostrar(timerDisplay, true);
+    iniciarTimer(TEMPOS[modoAtual]);
 
     btnAlternativas.forEach((btn, index) => {
         btn.innerText = dados.alternativas[index];
@@ -239,6 +786,7 @@ function carregarPergunta() {
 
 function verificarResposta(indiceEscolhido) {
     clearInterval(timer);
+    respondida = true;
     const dados = perguntas[indiceAtual];
     const correta = dados.respostaCorreta;
 
@@ -247,7 +795,7 @@ function verificarResposta(indiceEscolhido) {
     if (indiceEscolhido === -1) {
         // Estourou o tempo
         mostrarResultado(
-            "⏰ O tempo acabou!",
+            "✖ O tempo acabou!",
             "Você demorou muito. A resposta correta era: " + dados.alternativas[correta],
             false
         );
@@ -256,12 +804,12 @@ function verificarResposta(indiceEscolhido) {
         // Acertou
         pontuacao++;
         btnAlternativas[indiceEscolhido].classList.add("correta");
-        mostrarResultado("🎉 Resposta Correta!", dados.explicacaoCorreta, true);
+        mostrarResultado("✔ Resposta Correta!", dados.explicacaoCorreta, true);
     } else {
         // Errou
         btnAlternativas[indiceEscolhido].classList.add("errada");
         btnAlternativas[correta].classList.add("correta");
-        mostrarResultado("❌ Resposta Incorreta!", dados.explicacaoErrada, false);
+        mostrarResultado("✖ Resposta Incorreta!", dados.explicacaoErrada, false);
     }
 
     mostrar(areaExplicacao, true);
@@ -275,49 +823,145 @@ function mostrarResultado(titulo, texto, acertou) {
     textoExplicacao.innerText = texto;
 }
 
-function finalizarQuiz() {
+function animarNumero(elemento, ate, duracao = 1500) {
+    const inicio = performance.now();
+    const passo = (agora) => {
+        const t = Math.min(1, (agora - inicio) / duracao);
+        elemento.textContent = Math.round(ate * (1 - Math.pow(1 - t, 3)));
+        if (t < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+}
+
+async function finalizarQuiz() {
     clearInterval(timer);
+    jogando = false;
     mostrar(quizContainer, false);
     mostrar(finalScreen, true);
+    gradeInicio.classList.remove("jogando");
+    bloquearNavegacao(false);
+    atualizarRodape();
 
-    finalScore.innerText = `Você acertou ${pontuacao} de ${perguntas.length} questões!`;
+    const total = perguntas.length;
+    const erros = total - pontuacao;
+    const modoJogado = modoAtual;
 
-    const porcentagem = pontuacao / perguntas.length;
-    let emoji, mensagem;
+    finalScore.innerText = `Você acertou ${pontuacao} de ${total} questões!`;
+
+    // perfil do usuário
+    $("finalAvatar").replaceChildren(criarAvatar(usuario.foto, 64));
+    $("finalNome").textContent = usuario.nome_login;
+    $("finalModo").textContent = "Modo " + NOMES_MODO[modoJogado];
+
+    // barras de acertos e erros sendo carregadas
+    const barraAcertos = $("barraAcertos");
+    const barraErros = $("barraErros");
+    barraAcertos.style.width = "0";
+    barraErros.style.width = "0";
+    $("numAcertos").textContent = "0";
+    $("numErros").textContent = "0";
+    setTimeout(() => {
+        barraAcertos.style.width = (pontuacao / total * 100) + "%";
+        barraErros.style.width = (erros / total * 100) + "%";
+        animarNumero($("numAcertos"), pontuacao);
+        animarNumero($("numErros"), erros);
+    }, 150);
+
+    const porcentagem = pontuacao / total;
+    let kanji, mensagem;
 
     if (porcentagem === 1) {
-        emoji = "🏆";
+        kanji = "優";
         mensagem = "Perfeito! Você domina TI!";
     } else if (porcentagem >= 0.7) {
-        emoji = "🎉";
+        kanji = "良";
         mensagem = "Mandou muito bem!";
     } else if (porcentagem >= 0.4) {
-        emoji = "🙂";
+        kanji = "可";
         mensagem = "Bom resultado, mas dá para melhorar.";
     } else {
-        emoji = "📚";
+        kanji = "学";
         mensagem = "Continue estudando, você chega lá!";
     }
 
-    emojiFinal.innerText = emoji;
+    emojiFinal.innerText = kanji;
     mensagemFinal.innerText = mensagem;
     btnReiniciar.focus({ preventScroll: true });
+
+    // salva no banco e descobre a colocação no ranking do modo jogado
+    const lugar = $("finalLugar");
+    lugar.textContent = "Calculando a sua colocação…";
+    await salvarPartida(modoJogado, pontuacao, total);
+
+    const ranking = melhoresPorJogador(await buscarRanking(modoJogado));
+    const posicao = ranking.findIndex(r => r.jogador === usuario.nome_login) + 1;
+
+    lugar.replaceChildren();
+    if (posicao >= 1 && posicao <= 3) {
+        lugar.append(criarCoroa(posicao),
+            document.createTextNode(`${posicao}º lugar - Coroa de ${CORES_COROA[posicao].nome}!`));
+    } else if (posicao > 3) {
+        lugar.textContent = `Você ficou em ${posicao}º lugar no modo ${NOMES_MODO[modoJogado]}.`;
+    } else {
+        lugar.textContent = "Sua pontuação foi registrada.";
+    }
+
+    atualizarRanking();
 }
 
 function voltarAoInicio() {
     clearInterval(timer);
+    jogando = false;
+    respondida = true;
+    quizContainer.classList.remove("quiz-borrado");
+    gradeInicio.classList.remove("jogando");
+    bloquearNavegacao(false);
     mostrar(finalScreen, false);
     mostrar(quizContainer, false);
     mostrar(inicioContainer, true);
+    atualizarRodape();
+    if (appAberto) atualizarRanking();
+}
+
+// ---------- sair do quiz no meio (pop-up com blur) ----------
+function pedirSaida() {
+    pausarTimer();
+    quizContainer.classList.add("quiz-borrado");
+    abrirModal(modalSair);
+}
+
+function cancelarSaida() {
+    fecharModal(modalSair, false);
+    quizContainer.classList.remove("quiz-borrado");
+    if (!respondida) retomarTimer();
+    const proximoFoco = respondida ? btnProxima : btnAlternativas.find(b => !b.disabled);
+    if (proximoFoco) proximoFoco.focus({ preventScroll: true });
+}
+
+function confirmarSaida() {
+    fecharModal(modalSair, false);
+    voltarAoInicio();
 }
 
 // ==========================================
-// 6. TIMER (modo difícil)
+// 10. TIMER (por pergunta, em todos os modos)
 // ==========================================
 function iniciarTimer(segundos) {
+    tempoTotal = segundos;
     tempoRestante = segundos;
-    atualizarDisplayTempo();
 
+    // a barra volta cheia sem animação
+    barraTempo.style.transition = "none";
+    barraTempo.style.width = "100%";
+    void barraTempo.offsetWidth;
+    barraTempo.style.transition = "";
+
+    atualizarDisplayTempo();
+    retomarTimer();
+}
+
+function retomarTimer() {
+    clearInterval(timer);
     timer = setInterval(() => {
         tempoRestante--;
         atualizarDisplayTempo();
@@ -329,15 +973,22 @@ function iniciarTimer(segundos) {
     }, 1000);
 }
 
+function pausarTimer() {
+    clearInterval(timer);
+}
+
 function atualizarDisplayTempo() {
     const minutos = Math.floor(tempoRestante / 60);
     const segundosRestantes = tempoRestante % 60;
     spanTempo.innerText = `${minutos}:${segundosRestantes.toString().padStart(2, "0")}`;
-    timerDisplay.classList.toggle("urgente", tempoRestante <= 10);
+    barraTempo.style.width = Math.max(0, tempoRestante / tempoTotal * 100) + "%";
+
+    const limiteUrgente = Math.min(10, Math.ceil(tempoTotal / 3));
+    timerDisplay.classList.toggle("urgente", tempoRestante <= limiteUrgente);
 }
 
 // ==========================================
-// 7. ACESSIBILIDADE: menu, alto contraste e fonte
+// 11. ACESSIBILIDADE: menu, alto contraste, fonte, tema e daltonismo
 // ==========================================
 function abrirFecharMenu() {
     const aberto = menuAcessibilidade.classList.toggle("ativo");
@@ -359,26 +1010,59 @@ function aplicarAcessibilidade() {
     btnFonteMais.disabled = escalaFonte >= ESCALA_MAX;
     btnFonteMenos.disabled = escalaFonte <= ESCALA_MIN;
 
-    try {
-        localStorage.setItem("acessibilidade", JSON.stringify({ escalaFonte, altoContraste }));
-    } catch (e) { /* o navegador pode bloquear o armazenamento */ }
+    gravarLS("acessibilidade", { escalaFonte, altoContraste });
+}
+
+function aplicarTema() {
+    document.documentElement.dataset.tema = tema;
+    const claro = tema === "claro";
+    $("btnTema").setAttribute("aria-checked", claro);
+    $("temaTexto").textContent = claro ? "Tema claro" : "Tema escuro";
+    gravarLS("gq_tema", tema);
+}
+
+function aplicarDaltonismo() {
+    ["protanopia", "deuteranopia", "tritanopia"].forEach(t => {
+        document.documentElement.classList.toggle("daltonismo-" + t, t === daltonismo);
+    });
+    const radio = document.querySelector(`input[name="daltonismo"][value="${daltonismo}"]`);
+    if (radio) radio.checked = true;
+    gravarLS("gq_daltonismo", daltonismo);
 }
 
 function carregarPreferencias() {
-    try {
-        const salvo = JSON.parse(localStorage.getItem("acessibilidade"));
-        if (salvo) {
-            const escala = Number(salvo.escalaFonte);
-            if (escala >= ESCALA_MIN && escala <= ESCALA_MAX) escalaFonte = escala;
-            altoContraste = salvo.altoContraste === true;
-        }
-    } catch (e) { /* sem preferências salvas */ }
+    const salvo = lerLS("acessibilidade", null);
+    if (salvo) {
+        const escala = Number(salvo.escalaFonte);
+        if (escala >= ESCALA_MIN && escala <= ESCALA_MAX) escalaFonte = escala;
+        altoContraste = salvo.altoContraste === true;
+    }
+    tema = lerLS("gq_tema", "escuro") === "claro" ? "claro" : "escuro";
+    const dalt = lerLS("gq_daltonismo", "nenhum");
+    daltonismo = ["protanopia", "deuteranopia", "tritanopia"].includes(dalt) ? dalt : "nenhum";
+
     aplicarAcessibilidade();
+    aplicarTema();
+    aplicarDaltonismo();
 }
 
 // ==========================================
-// 8. EVENTOS
+// 12. EVENTOS
 // ==========================================
+
+// Login e perfil
+inputNome.addEventListener("input", () => { erroLogin.textContent = ""; atualizarPreviaNome(); });
+formLogin.addEventListener("submit", tentarEntrar);
+$("btnEscolherFoto").addEventListener("click", () => $("inputFoto").click());
+$("inputFoto").addEventListener("change", aoEscolherFoto);
+$("btnPerfilSalvar").addEventListener("click", confirmarPerfil);
+$("btnPerfilCancelar").addEventListener("click", () => fecharModal(modalPerfil));
+btnPerfil.addEventListener("click", () => abrirPerfil(false));
+$("btnAlterarFoto").addEventListener("click", () => abrirPerfil(false));
+$("btnTrocarUsuario").addEventListener("click", sairDaConta);
+
+// Abas
+abasBtns.forEach(b => b.addEventListener("click", () => irParaAba(b.dataset.aba)));
 
 // Escolha do modo de jogo
 btnModos.forEach(btn => {
@@ -406,13 +1090,44 @@ btnProxima.addEventListener("click", () => {
 
 // Botão de dica (modo normal)
 btnDica.addEventListener("click", () => {
-    const visivel = textoDica.style.display === "block";
+    const visivel = !textoDica.hidden;
     mostrar(textoDica, !visivel);
     btnDica.setAttribute("aria-expanded", !visivel);
 });
 
+// Sair do quiz (com confirmação)
+btnSair.addEventListener("click", pedirSaida);
+$("btnSairSim").addEventListener("click", confirmarSaida);
+$("btnSairNao").addEventListener("click", cancelarSaida);
+
 // Voltar ao início (sem recarregar a página)
 btnReiniciar.addEventListener("click", voltarAoInicio);
+
+// Ranking: filtro por modo
+document.querySelectorAll(".filtro").forEach(btn => {
+    btn.addEventListener("click", () => {
+        filtroRanking = btn.dataset.filtro;
+        document.querySelectorAll(".filtro").forEach(b => b.setAttribute("aria-pressed", b === btn));
+        atualizarRanking();
+    });
+});
+
+// Pop-up do GitHub
+$("btnGhFechar").addEventListener("click", () => fecharModal(modalGithub));
+modalGithub.addEventListener("click", (e) => { if (e.target === modalGithub) fecharModal(modalGithub); });
+
+// Tema e daltonismo
+$("btnTema").addEventListener("click", () => {
+    tema = tema === "claro" ? "escuro" : "claro";
+    aplicarTema();
+});
+
+document.querySelectorAll('input[name="daltonismo"]').forEach(r => {
+    r.addEventListener("change", () => {
+        daltonismo = r.value;
+        aplicarDaltonismo();
+    });
+});
 
 // Menu de acessibilidade
 btnAcessibilidade.addEventListener("click", (e) => {
@@ -425,9 +1140,35 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && menuAcessibilidade.classList.contains("ativo")) {
-        fecharMenuAcessibilidade();
-        btnAcessibilidade.focus();
+    if (e.key === "Escape") {
+        if (menuAcessibilidade.classList.contains("ativo")) {
+            fecharMenuAcessibilidade();
+            btnAcessibilidade.focus();
+        } else if (modalGithub.classList.contains("visivel")) {
+            fecharModal(modalGithub);
+        } else if (modalSair.classList.contains("visivel")) {
+            cancelarSaida();
+        } else if (modalPerfil.classList.contains("visivel") && !$("btnPerfilCancelar").hidden) {
+            fecharModal(modalPerfil);
+        }
+    }
+
+    // mantém o foco dentro do pop-up aberto
+    if (e.key === "Tab") {
+        const aberto = [...document.querySelectorAll(".modal-fundo.visivel")].pop();
+        if (!aberto) return;
+        const focaveis = [...aberto.querySelectorAll("button:not(:disabled), a[href], input:not([type=file])")]
+            .filter(x => !x.hidden && x.offsetParent !== null);
+        if (!focaveis.length) return;
+        const primeiro = focaveis[0];
+        const ultimo = focaveis[focaveis.length - 1];
+        if (e.shiftKey && document.activeElement === primeiro) {
+            e.preventDefault();
+            ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+            e.preventDefault();
+            primeiro.focus();
+        }
     }
 });
 
@@ -453,6 +1194,17 @@ btnResetarAcessibilidade.addEventListener("click", () => {
 });
 
 // ==========================================
-// 9. INICIALIZAÇÃO
+// 13. INICIALIZAÇÃO
 // ==========================================
+function montarPrevias() {
+    $("previaCoroas").append(criarCoroa(1), criarCoroa(2), criarCoroa(3));
+    document.querySelectorAll(".mini-coroa").forEach(m => m.appendChild(criarCoroa(Number(m.dataset.coroa))));
+}
+
 carregarPreferencias();
+montarGradeAvatares();
+montarCriadores();
+montarPrevias();
+atualizarStatusBanco();
+chamarAPI("/ranking"); // só para saber se o banco está conectado
+iniciarSplash();
