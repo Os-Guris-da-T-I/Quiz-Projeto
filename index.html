@@ -41,36 +41,107 @@
         <button id="btnAcessibilidade" class="botao-acessibilidade"
                 title="Opções de acessibilidade"
                 aria-haspopup="true" aria-expanded="false" aria-controls="menuAcessibilidade">
-            <span aria-hidden="true">♿</span> Acessibilidade
+            <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="1.9"/><path d="M5 8.6l7 1.6 7-1.6M12 10.2v4.4M12 14.6l-3.2 6M12 14.6l3.2 6"/></svg>
+            <span>Acessibilidade</span>
         </button>
 
         <div id="menuAcessibilidade" class="menu-acessibilidade" role="group" aria-label="Opções de acessibilidade">
-            <button id="btnContraste" aria-pressed="false">🌓 Alto contraste</button>
+            <button id="btnContraste" aria-pressed="false">
+                <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" class="icone-cheio"/></svg>
+                <span>Alto contraste</span>
+            </button>
 
             <div class="controle-fonte">
                 <button id="btnFonteMenos" aria-label="Diminuir fonte">A-</button>
                 <button id="btnFonteMais" aria-label="Aumentar fonte">A+</button>
             </div>
 
-            <button id="btnResetarAcessibilidade">🔄 Restaurar</button>
+            <button id="btnResetarAcessibilidade">
+                <svg class="icone-ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4.5 4.5v4.2h4.2"/></svg>
+                <span>Restaurar</span>
+            </button>
         </div>
     </header>
 
-    <!-- Tela de entrada (login por nome) -->
+    <!-- Tela de entrada: login, cadastro e conclusão do cadastro com o Google -->
     <section id="tela-login" class="tela tela-login" hidden>
         <div class="login-card cartao">
             <div class="selo" aria-hidden="true">問</div>
             <h1 class="titulo-marca">GennisQuiz</h1>
             <p class="subtitulo-marca">Conhecimentos Gerais de TI</p>
 
-            <form id="formLogin" novalidate>
-                <label for="inputNome">Digite o seu nome para começar</label>
-                <input id="inputNome" type="text" maxlength="30" autocomplete="nickname" spellcheck="false"
-                       placeholder="Ex.: matheus_dev" aria-describedby="dicaNome erroLogin">
-                <p id="dicaNome" class="dica-campo">Seu nome de jogador: <strong id="previaNome">—</strong></p>
+            <div class="sub-abas" id="subAbas" role="tablist" aria-label="Entrar ou criar conta">
+                <button type="button" role="tab" id="subaba-entrar" data-sub="entrar" aria-selected="true" aria-controls="formLogin">Entrar</button>
+                <button type="button" role="tab" id="subaba-cadastro" data-sub="cadastro" aria-selected="false" aria-controls="formCadastro">Criar conta</button>
+            </div>
+
+            <p id="avisoLogin" class="aviso-login" role="status" hidden></p>
+
+            <!-- Entrar -->
+            <form id="formLogin" class="form-auth" novalidate>
+                <label for="loginId">E-mail ou nickname</label>
+                <input id="loginId" type="text" maxlength="120" autocomplete="username" spellcheck="false" placeholder="Ex.: matheus_dev">
+
+                <label for="loginSenha">Senha</label>
+                <input id="loginSenha" type="password" maxlength="100" autocomplete="current-password" placeholder="Sua senha">
+
                 <p id="erroLogin" class="erro-campo" role="alert"></p>
                 <button type="submit" id="btnEntrar" class="btn-primario">Entrar</button>
             </form>
+
+            <!-- Criar conta -->
+            <form id="formCadastro" class="form-auth" novalidate hidden>
+                <label for="cadNick">Nickname</label>
+                <div class="campo-status">
+                    <input id="cadNick" type="text" maxlength="30" autocomplete="nickname" spellcheck="false" placeholder="Ex.: matheus_dev" aria-describedby="cadNickStatus">
+                    <span class="icone-status" data-icone-status="cadNick" aria-hidden="true"></span>
+                </div>
+                <p id="cadNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+
+                <label for="cadEmail">E-mail</label>
+                <input id="cadEmail" type="email" maxlength="120" autocomplete="email" spellcheck="false" placeholder="voce@email.com">
+
+                <label for="cadSenha">Senha</label>
+                <input id="cadSenha" type="password" maxlength="100" autocomplete="new-password" placeholder="De 6 a 100 caracteres">
+
+                <label for="cadSenha2">Confirmar senha</label>
+                <input id="cadSenha2" type="password" maxlength="100" autocomplete="new-password" placeholder="Repita a senha">
+
+                <span class="rotulo-campo">Foto de perfil</span>
+                <div id="seletorFotoCadastro"></div>
+
+                <p id="erroCadastro" class="erro-campo" role="alert"></p>
+                <button type="submit" id="btnCadastrar" class="btn-primario">Criar conta</button>
+            </form>
+
+            <!-- Concluir cadastro vindo do Google (escolher nickname e foto) -->
+            <form id="formGoogle" class="form-auth" novalidate hidden>
+                <p class="texto-apoio">Conta do Google confirmada: <strong id="googleEmail"></strong>. Falta só escolher o seu nickname e a sua foto.</p>
+
+                <label for="gNick">Nickname</label>
+                <div class="campo-status">
+                    <input id="gNick" type="text" maxlength="30" autocomplete="nickname" spellcheck="false" aria-describedby="gNickStatus">
+                    <span class="icone-status" data-icone-status="gNick" aria-hidden="true"></span>
+                </div>
+                <p id="gNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+
+                <span class="rotulo-campo">Foto de perfil</span>
+                <div id="seletorFotoGoogle"></div>
+
+                <p id="erroGoogle" class="erro-campo" role="alert"></p>
+                <div class="acoes-form">
+                    <button type="submit" id="btnConcluirGoogle" class="btn-primario">Concluir cadastro</button>
+                    <button type="button" id="btnCancelarGoogle">Cancelar</button>
+                </div>
+            </form>
+
+            <!-- Google -->
+            <div id="areaGoogle" class="area-google">
+                <div class="divisor"><span>ou</span></div>
+                <div id="googleBotao" class="google-botao"></div>
+                <p id="googleAviso" class="dica-campo" hidden></p>
+            </div>
+
             <p class="status-banco" data-status></p>
         </div>
     </section>
@@ -88,6 +159,10 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg>
                     <span>Início</span>
                 </button>
+                <button class="aba" role="tab" id="tab-perfil" data-aba="perfil" aria-selected="false" aria-controls="aba-perfil">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="4"/><path d="M4.5 20.5c.6-4 3.7-6.2 7.5-6.2s6.9 2.2 7.5 6.2"/></svg>
+                    <span>Perfil</span>
+                </button>
                 <button class="aba" role="tab" id="tab-config" data-aba="config" aria-selected="false" aria-controls="aba-config">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/><circle cx="12" cy="12" r="6.6"/></svg>
                     <span>Configurações</span>
@@ -98,7 +173,7 @@
                 </button>
             </div>
 
-            <button id="btnPerfil" class="chip-usuario" title="Editar foto de perfil">
+            <button id="btnPerfil" class="chip-usuario" title="Abrir o meu perfil">
                 <span id="chipAvatar"></span>
                 <span id="chipNome"></span>
             </button>
@@ -121,13 +196,13 @@
                                 <button class="btn-modo" data-modo="facil">
                                     <span class="modo-kanji" aria-hidden="true">易</span>
                                     <span class="modo-nome">Modo Fácil</span>
-                                    <span class="modo-tempo">1:30 por pergunta</span>
+                                    <span class="modo-tempo">1:00 por pergunta</span>
                                     <span class="modo-desc">Dica sempre visível</span>
                                 </button>
                                 <button class="btn-modo" data-modo="normal">
                                     <span class="modo-kanji" aria-hidden="true">中</span>
                                     <span class="modo-nome">Modo Normal</span>
-                                    <span class="modo-tempo">0:40 por pergunta</span>
+                                    <span class="modo-tempo">0:30 por pergunta</span>
                                     <span class="modo-desc">Dica quando você pedir</span>
                                 </button>
                                 <button class="btn-modo" data-modo="dificil">
@@ -150,7 +225,7 @@
                                 <!-- Timer no canto esquerdo -->
                                 <div id="timer-display" role="timer" aria-label="Tempo restante" hidden>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9.5 2.5h5"/></svg>
-                                    <span id="tempo">1:30</span>
+                                    <span id="tempo">1:00</span>
                                 </div>
 
                                 <h2 id="question">Título da Pergunta</h2>
@@ -234,6 +309,29 @@
                 </div>
             </section>
 
+            <!-- ============ ABA: PERFIL ============ -->
+            <section id="aba-perfil" class="painel" role="tabpanel" aria-labelledby="tab-perfil" hidden>
+                <h1 class="titulo-secao">Perfil</h1>
+
+                <div id="perfilConteudo"></div>
+
+                <div class="cartao cartao-conf cartao-conta" id="cartaoConta">
+                    <h2>Minha conta</h2>
+                    <p class="texto-apoio" id="contaInfo"></p>
+                    <div class="acoes-linha">
+                        <button id="btnEditarPerfil" class="btn-primario">Editar perfil</button>
+                        <button id="btnAlterarNick">Alterar nickname</button>
+                        <button id="btnAlterarSenha">Alterar senha</button>
+                        <button id="btnSairConta">Sair da conta</button>
+                    </div>
+                    <p id="notaSenhaGoogle" class="dica-campo" hidden>Sua conta usa o Google: a senha é gerenciada direto na sua conta Google.</p>
+                    <div class="zona-perigo">
+                        <p class="texto-apoio">Excluir a conta apaga o seu perfil, as suas pontuações e os seus emblemas do banco de dados. Não dá para desfazer.</p>
+                        <button id="btnExcluirConta" class="btn-perigo">Excluir minha conta</button>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ ABA: CONFIGURAÇÕES ============ -->
             <section id="aba-config" class="painel" role="tabpanel" aria-labelledby="tab-config" hidden>
                 <h1 class="titulo-secao">Configurações</h1>
@@ -251,15 +349,6 @@
                             </span>
                             <span id="temaTexto">Tema escuro</span>
                         </button>
-                    </div>
-
-                    <div class="cartao cartao-conf">
-                        <h2>Perfil</h2>
-                        <p class="texto-apoio">Troque a sua foto ou entre com outro nome.</p>
-                        <div class="acoes-linha">
-                            <button id="btnAlterarFoto">Alterar foto</button>
-                            <button id="btnTrocarUsuario">Trocar de usuário</button>
-                        </div>
                     </div>
 
                     <div class="cartao cartao-conf cartao-largo">
@@ -304,8 +393,8 @@
                     <div class="cartao cartao-conf">
                         <h2>Modos de jogo</h2>
                         <ul class="lista-simples">
-                            <li><strong>Fácil:</strong> 1:30 por pergunta, dica sempre visível</li>
-                            <li><strong>Normal:</strong> 0:40 por pergunta, dica sob demanda</li>
+                            <li><strong>Fácil:</strong> 1:00 por pergunta, dica sempre visível</li>
+                            <li><strong>Normal:</strong> 0:30 por pergunta, dica sob demanda</li>
                             <li><strong>Difícil:</strong> 0:15 por pergunta, sem dicas</li>
                         </ul>
                     </div>
@@ -328,31 +417,158 @@
         </div>
     </footer>
 
-    <!-- Pop-up: escolher foto de perfil -->
-    <div id="modalPerfil" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloPerfil">
-        <div class="modal-caixa modal-grande cartao">
-            <h2 id="tituloPerfil">Escolha a sua foto de perfil</h2>
-            <p class="texto-apoio">Use um dos avatares ou envie uma foto que esteja salva no seu dispositivo.</p>
+    <!-- Pop-up: editar perfil (foto, banner e biografia) -->
+    <div id="modalEditar" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloEditar">
+        <div class="modal-caixa modal-grande cartao modal-form">
+            <h2 id="tituloEditar">Editar perfil</h2>
 
-            <div class="perfil-previa">
-                <span id="perfilPrevia"></span>
-                <strong id="perfilNome"></strong>
+            <span class="rotulo-campo">Foto de perfil</span>
+            <div id="seletorFotoEditar"></div>
+
+            <label class="rotulo-campo" for="editarPronomes">Pronome <small>(opcional)</small></label>
+            <input id="editarPronomes" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Ex.: ele/dele, ela/dela, elu/delu">
+
+            <span class="rotulo-campo">Banner de fundo</span>
+            <div class="banner-edicao">
+                <div id="bannerPrevia" class="banner-previa"></div>
+                <div class="acoes-linha">
+                    <button type="button" id="btnEscolherBanner">Enviar banner</button>
+                    <button type="button" id="btnAjustarBanner">Ajustar banner</button>
+                    <button type="button" id="btnRemoverBanner">Remover banner</button>
+                </div>
+                <input type="file" id="inputBanner" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only" tabindex="-1">
             </div>
+            <small class="dica-campo">PNG, JPG, WEBP ou GIF animado (banner de até 1 MB; foto de até 250 KB se for GIF).</small>
 
-            <div class="avatares" id="gradeAvatares" role="group" aria-label="Avatares disponíveis"></div>
+            <label class="rotulo-campo" for="editarBio">Biografia <small id="contaBio">0/200</small></label>
+            <textarea id="editarBio" maxlength="200" rows="3" placeholder="Conte um pouco sobre você"></textarea>
 
-            <div class="upload-linha">
-                <button type="button" id="btnEscolherFoto">Enviar foto do dispositivo</button>
-                <input type="file" id="inputFoto" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only" tabindex="-1">
-            </div>
-            <p id="erroFoto" class="erro-campo" role="alert"></p>
-
+            <p id="erroEditar" class="erro-campo" role="alert"></p>
             <div class="modal-acoes">
-                <button id="btnPerfilSalvar" class="btn-primario" data-foco>Confirmar</button>
-                <button id="btnPerfilCancelar" hidden>Cancelar</button>
+                <button id="btnEditarSalvar" class="btn-primario">Salvar</button>
+                <button id="btnEditarCancelar" data-foco>Cancelar</button>
             </div>
         </div>
     </div>
+
+    <!-- Pop-up: ajustar foto ou banner antes de salvar (arrastar e zoom) -->
+    <div id="modalAjuste" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloAjuste">
+        <div class="modal-caixa modal-grande cartao modal-form">
+            <h2 id="tituloAjuste">Ajustar foto de perfil</h2>
+            <p class="texto-apoio">Arraste a imagem para posicionar e use o zoom para aproximar.</p>
+            <div id="ajusteQuadro" class="ajuste-quadro" tabindex="0" aria-label="Área de enquadramento. Arraste ou use as setas do teclado."></div>
+            <label class="rotulo-campo" for="ajusteZoom">Zoom</label>
+            <input id="ajusteZoom" type="range" min="1" max="4" step="0.01" value="1">
+            <div class="modal-acoes">
+                <button id="btnAjusteAplicar" class="btn-primario">Aplicar</button>
+                <button id="btnAjusteCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: alterar nickname -->
+    <div id="modalNick" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloNick">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloNick">Alterar nickname</h2>
+            <p class="texto-apoio">Depois de trocar, você só poderá alterar de novo depois de 7 dias.</p>
+            <label class="rotulo-campo" for="novoNick">Novo nickname</label>
+            <div class="campo-status">
+                <input id="novoNick" type="text" maxlength="30" spellcheck="false" autocomplete="off" aria-describedby="novoNickStatus">
+                <span class="icone-status" data-icone-status="novoNick" aria-hidden="true"></span>
+            </div>
+            <p id="novoNickStatus" class="status-nick" aria-live="polite">Seu nome de jogador: <strong>—</strong></p>
+            <p id="erroNick" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnNickSalvar" class="btn-primario">Salvar</button>
+                <button id="btnNickCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: alterar senha -->
+    <div id="modalSenha" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloSenha">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloSenha">Alterar senha</h2>
+            <p class="texto-apoio">Depois de trocar, você só poderá alterar de novo depois de 7 dias.</p>
+            <label class="rotulo-campo" for="senhaAtual">Senha atual</label>
+            <input id="senhaAtual" type="password" maxlength="100" autocomplete="current-password">
+            <label class="rotulo-campo" for="senhaNova">Nova senha</label>
+            <input id="senhaNova" type="password" maxlength="100" autocomplete="new-password" placeholder="De 6 a 100 caracteres">
+            <label class="rotulo-campo" for="senhaNova2">Confirmar nova senha</label>
+            <input id="senhaNova2" type="password" maxlength="100" autocomplete="new-password">
+            <p id="erroSenha" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnSenhaSalvar" class="btn-primario">Salvar</button>
+                <button id="btnSenhaCancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up animado: troca bloqueada pelos 7 dias -->
+    <div id="modalEspera" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloEspera" aria-describedby="textoEspera">
+        <div class="modal-caixa cartao modal-espera">
+            <div class="ampulheta" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                    <path class="amp-vidro" d="M12 6h24M12 42h24M14 6c0 9 6 12 10 18-4 6-10 9-10 18M34 6c0 9-6 12-10 18 4 6 10 9 10 18"/>
+                    <path class="amp-areia-cima" d="M17 8c1 5 4 7 7 11 3-4 6-6 7-11z"/>
+                    <path class="amp-areia-baixo" d="M17 40c1-5 4-7 7-10 3 3 6 5 7 10z"/>
+                    <line class="amp-fio" x1="24" y1="22" x2="24" y2="34"/>
+                </svg>
+            </div>
+            <h2 id="tituloEspera">Calma, ainda não dá!</h2>
+            <p id="textoEspera" class="texto-apoio"></p>
+            <p class="espera-faltam"><strong id="esperaDias">0</strong> <span id="esperaDiasTexto">dias</span></p>
+            <div id="esperaPontos" class="espera-pontos" aria-hidden="true"></div>
+            <p id="esperaData" class="dica-campo"></p>
+            <div class="modal-acoes">
+                <button id="btnEsperaOk" class="btn-primario" data-foco>Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up 1 da exclusão: confirmar -->
+    <div id="modalExcluir1" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloExcluir1" aria-describedby="textoExcluir1">
+        <div class="modal-caixa cartao">
+            <h2 id="tituloExcluir1">Deseja mesmo excluir a sua conta?</h2>
+            <p id="textoExcluir1" class="texto-apoio">Seu perfil, suas pontuações e seus emblemas serão apagados do banco de dados e ninguém mais terá acesso a eles.</p>
+            <div class="modal-acoes">
+                <button id="btnExcluir1Sim" class="btn-perigo">Sim</button>
+                <button id="btnExcluir1Nao" data-foco>Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up 2 da exclusão: nickname e senha -->
+    <div id="modalExcluir2" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-labelledby="tituloExcluir2">
+        <div class="modal-caixa cartao modal-form">
+            <h2 id="tituloExcluir2">Confirme para excluir</h2>
+            <p id="textoExcluir2" class="texto-apoio">Digite o seu nickname e a sua senha para apagar a conta de vez.</p>
+            <label class="rotulo-campo" for="excluirNick">Nickname</label>
+            <input id="excluirNick" type="text" maxlength="30" spellcheck="false" autocomplete="off">
+            <div id="excluirSenhaGrupo" class="grupo-campo">
+                <label class="rotulo-campo" for="excluirSenha">Senha</label>
+                <input id="excluirSenha" type="password" maxlength="100" autocomplete="current-password">
+            </div>
+            <p id="erroExcluir" class="erro-campo" role="alert"></p>
+            <div class="modal-acoes">
+                <button id="btnExcluir2Confirmar" class="btn-perigo">Excluir definitivamente</button>
+                <button id="btnExcluir2Cancelar" data-foco>Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: perfil de outro jogador -->
+    <div id="modalVerPerfil" class="modal-fundo" hidden role="dialog" aria-modal="true" aria-label="Perfil do jogador">
+        <div class="modal-caixa modal-perfil cartao">
+            <div id="verPerfilConteudo"></div>
+            <div class="modal-acoes">
+                <button id="btnVerPerfilFechar" data-foco>Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso rápido (emblema novo, conta excluída, etc.) -->
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
     <!-- Pop-up: confirmar saída do quiz (fundo com blur) -->
     <div id="modalSair" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloSair" aria-describedby="textoSair">
