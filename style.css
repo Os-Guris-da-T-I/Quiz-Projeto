@@ -213,7 +213,8 @@ button:active:not(:disabled) {
 
 button:focus-visible,
 .btn-link:focus-visible,
-input:focus-visible {
+input:focus-visible,
+textarea:focus-visible {
     outline: 3px solid var(--linha-forte);
     outline-offset: 4px;
 }
@@ -254,6 +255,29 @@ button:disabled {
     display: flex;
     justify-content: flex-end;
     padding: 10px 20px;
+}
+
+.icone-ui {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icone-ui .icone-cheio {
+    fill: currentColor;
+}
+
+.botao-acessibilidade,
+.menu-acessibilidade button:has(.icone-ui) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
 }
 
 .botao-acessibilidade {
@@ -404,18 +428,22 @@ button:disabled {
     color: var(--muted);
 }
 
-#formLogin {
+.form-auth {
     display: grid;
     gap: 0.5rem;
-    margin-top: 1.8rem;
+    margin-top: 1.4rem;
     text-align: left;
 }
 
-#formLogin label {
+.form-auth label,
+.rotulo-campo {
     font-weight: 700;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
     width: 100%;
     padding: 0.85rem 1rem;
     font-family: var(--fonte);
@@ -540,6 +568,11 @@ input[type="text"] {
 .chip-usuario {
     gap: 0.6rem;
     padding: 0.3rem 1rem 0.3rem 0.35rem;
+    border-radius: 999px;
+    overflow: visible;   /* a coroa do Top 1, 2 e 3 passa um pouco da borda */
+}
+
+.chip-usuario::before {
     border-radius: 999px;
 }
 
@@ -960,6 +993,7 @@ input[type="text"] {
    ===================================================== */
 .avatar {
     --tam: 48px;
+    position: relative;
     display: inline-grid;
     place-items: center;
     flex: none;
@@ -978,6 +1012,16 @@ input[type="text"] {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* imagem com o enquadramento escolhido no pop-up de ajuste (tamanho e posição vêm do script) */
+img.ajustada,
+.ajuste-quadro img {
+    position: absolute;
+    max-width: none;
+    object-fit: fill;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .avatar-escuro {
@@ -1460,6 +1504,7 @@ html[data-tema="claro"] .icone-sol {
 
 .modal-caixa {
     width: 100%;
+    margin: auto;        /* centraliza e, se o pop-up for alto, dá para rolar até o topo */
     max-width: 440px;
     padding: 2rem 1.8rem;
     display: grid;
@@ -1528,7 +1573,9 @@ html[data-tema="claro"] .icone-sol {
 
 .upload-linha {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 0.6rem;
 }
 
 #ghAvatar .avatar {
@@ -1689,6 +1736,795 @@ html.daltonismo-tritanopia { filter: url(#filtro-tritanopia); }
 
     .barra-linha {
         grid-template-columns: 4rem minmax(0, 1fr) 2rem;
+    }
+}
+
+/* =====================================================
+   LOGIN, CADASTRO E CONTA (banco de dados)
+   ===================================================== */
+.login-card {
+    max-width: 480px;
+}
+
+.sub-abas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 1.6rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.sub-abas button {
+    padding: 0.7rem 0.5rem;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--muted);
+}
+
+.sub-abas button::before {
+    display: none;
+}
+
+.sub-abas button:hover:not(:disabled) {
+    color: var(--fg);
+    transform: none;
+}
+
+.sub-abas button[aria-selected="true"] {
+    color: var(--fg);
+    border-bottom-color: var(--linha-forte);
+}
+
+.aviso-login {
+    margin-top: 1rem;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-align: left;
+    border: 1.5px solid var(--linha-forte);
+    border-radius: 2px;
+}
+
+.aviso-login::before {
+    content: "✖ ";
+}
+
+.aviso-login.aviso-ok::before {
+    content: "✔ ";
+}
+
+.campo-status {
+    position: relative;
+}
+
+.campo-status input {
+    padding-right: 2.8rem;
+}
+
+.icone-status {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0.9rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.icone-status.livre {
+    animation: pop 0.4s ease both;
+}
+
+.icone-status.ocupado {
+    animation: tremer 0.4s ease both;
+}
+
+.status-nick {
+    min-height: 1.5em;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.status-nick strong {
+    color: var(--fg);
+}
+
+.status-nick.livre span::before {
+    content: "✓ ";
+    font-weight: 800;
+}
+
+.status-nick.ocupado span::before {
+    content: "✗ ";
+    font-weight: 800;
+}
+
+.status-nick.livre,
+.status-nick.ocupado {
+    color: var(--fg);
+}
+
+.rotulo-campo {
+    display: block;
+    margin-top: 0.4rem;
+}
+
+.rotulo-campo small {
+    font-weight: 400;
+    color: var(--muted);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 5rem;
+    padding: 0.85rem 1rem;
+    font-family: var(--fonte);
+    font-size: 1rem;
+    color: var(--fg);
+    background: transparent;
+    border: 1.5px solid var(--linha-forte);
+    border-radius: 2px;
+}
+
+.acoes-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.acoes-form > * {
+    flex: 1 1 8rem;
+}
+
+.divisor {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 1.4rem 0 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.divisor::before,
+.divisor::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--line);
+}
+
+.google-botao {
+    display: flex;
+    justify-content: center;
+    min-height: 44px;
+}
+
+.btn-google-off {
+    gap: 0.7rem;
+    width: 300px;
+    max-width: 100%;
+}
+
+.btn-google-off svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.area-google .dica-campo {
+    margin-top: 0.6rem;
+}
+
+/* seletor de foto (cadastro e edição) */
+.seletor-previa {
+    display: grid;
+    justify-items: center;
+    margin-bottom: 0.6rem;
+}
+
+[id^="seletorFoto"] {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: center;
+}
+
+/* =====================================================
+   AVATAR COM COROA (perfil, topo do site)
+   ===================================================== */
+.avatar-wrap-grande .coroa {
+    top: -2.1rem;
+    width: 3.6rem;
+}
+
+.avatar-wrap-mini .coroa {
+    top: -0.8rem;
+    width: 1.35rem;
+}
+
+/* =====================================================
+   ABA PERFIL
+   ===================================================== */
+.perfil-cartao {
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+}
+
+.perfil-banner {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 1;      /* mesma proporção usada no pop-up de ajuste */
+    background-color: var(--inverso-bg);
+    background-image:
+        radial-gradient(circle at 50% 100%, transparent 0 26%, rgba(128, 128, 128, 0.35) 27% 29%, transparent 30% 42%, rgba(128, 128, 128, 0.35) 43% 45%, transparent 46% 58%, rgba(128, 128, 128, 0.35) 59% 61%, transparent 62%);
+    background-size: 64px 32px;
+    border-bottom: 1px solid var(--linha-forte);
+}
+
+.perfil-banner.com-imagem {
+    background-size: cover;
+    background-position: center;
+}
+
+.perfil-topo {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 0 1.6rem;
+    margin-top: -3.4rem;
+}
+
+.perfil-topo .avatar {
+    border-width: 4px;
+    box-shadow: 0 0 0 4px var(--bg);
+}
+
+.perfil-ident {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+    padding-top: 3.8rem;   /* começa logo abaixo do banner, ao lado da foto */
+}
+
+.perfil-linha-nome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.7rem;
+}
+
+.perfil-nome {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    overflow-wrap: anywhere;
+}
+
+.perfil-pronomes {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+}
+
+.perfil-meta {
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.perfil-bio {
+    padding: 1.1rem 1.6rem 1.6rem;
+    line-height: 1.7;
+    white-space: pre-line;      /* mostra as quebras de linha da biografia */
+    overflow-wrap: anywhere;
+}
+
+.perfil-bio.vazia {
+    color: var(--muted);
+    font-style: italic;
+}
+
+.emblemas-mini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.emblema-mini {
+    display: inline-grid;
+}
+
+.emblema-icone {
+    --tam: 40px;
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--tam);
+    height: var(--tam);
+}
+
+.emblema-icone svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.emblema-icone .coroa {
+    position: static;
+    width: 100%;
+    transform: none;
+    animation: none;
+}
+
+.kanji-emblema {
+    font-family: var(--fonte-titulo);
+    font-weight: 800;
+    font-size: 30px;
+}
+
+.coroa-inline {
+    position: static !important;
+    display: inline-block;
+    width: 1.5rem !important;
+    margin-right: 0.35rem;
+    transform: none !important;
+    vertical-align: -0.2em;
+    animation: none !important;
+}
+
+.perfil-bloco {
+    display: grid;
+    gap: 1.1rem;
+    padding: 1.6rem 1.5rem;
+    margin-bottom: 1.4rem;
+}
+
+.perfil-bloco h2 {
+    font-size: 1.4rem;
+}
+
+.perfil-sub {
+    font-size: 1.05rem;
+}
+
+.perfil-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.estat,
+.modo-caixa {
+    display: grid;
+    gap: 0.15rem;
+    align-content: start;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+}
+
+.estat-rotulo {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.estat-valor {
+    font-family: var(--fonte-titulo);
+    font-size: 1.6rem;
+    line-height: 1.3;
+}
+
+.estat small,
+.modo-caixa small {
+    color: var(--muted);
+}
+
+.perfil-modos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.modo-pontos {
+    font-family: var(--fonte-titulo);
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.ultimas {
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ultimas li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 1rem;
+    padding: 0.5rem 0.2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.ultimas small {
+    min-width: 5.5rem;
+    text-align: right;
+    color: var(--muted);
+}
+
+.emblemas-grade {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.emblema-cartao {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--linha-forte);
+    border-radius: 2px;
+}
+
+.emblema-cartao.bloqueado,
+.emblema-cartao.breve {
+    border-color: var(--line);
+}
+
+.emblema-cartao.bloqueado .emblema-icone {
+    opacity: 0.35;
+    filter: grayscale(1);
+}
+
+.emblema-txt {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.emblema-txt small {
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.emblema-estado {
+    margin-top: 0.2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.emblema-cartao.bloqueado .emblema-estado {
+    font-weight: 400;
+    color: var(--muted);
+}
+
+.emblema-breve {
+    --tam: 52px;
+    border: 2px dashed var(--line);
+    border-radius: 50%;
+    font-family: var(--fonte-titulo);
+    font-size: 1.6rem;
+    color: var(--muted);
+}
+
+/* conta: alterar dados e excluir */
+.cartao-conta {
+    margin-bottom: 1.4rem;
+}
+
+.zona-perigo {
+    display: grid;
+    gap: 0.7rem;
+    justify-items: start;
+    margin-top: 0.4rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+}
+
+.btn-perigo {
+    border-style: dashed;
+}
+
+.btn-perigo::before {
+    background: var(--inverso-bg);
+}
+
+/* ranking: clicar no jogador abre o perfil dele */
+.item-ranking.clicavel {
+    cursor: pointer;
+    transition: background-color var(--transicao);
+}
+
+.item-ranking.clicavel:hover,
+.item-ranking.clicavel:focus-visible {
+    background: var(--padrao);
+}
+
+.item-ranking.clicavel:focus-visible {
+    outline: 3px solid var(--linha-forte);
+    outline-offset: -3px;
+}
+
+/* =====================================================
+   POP-UPS DO PERFIL
+   ===================================================== */
+.modal-form {
+    justify-items: stretch;
+    text-align: left;
+}
+
+.modal-form h2,
+.modal-form > .texto-apoio {
+    text-align: center;
+}
+
+.modal-form .modal-acoes {
+    justify-content: center;
+}
+
+.banner-edicao {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.banner-previa {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 1;
+    border: 1px solid var(--linha-forte);
+    border-radius: 2px;
+    background-color: var(--inverso-bg);
+    background-image: radial-gradient(circle at 50% 100%, transparent 0 26%, rgba(128, 128, 128, 0.35) 27% 29%, transparent 30% 42%, rgba(128, 128, 128, 0.35) 43% 45%, transparent 46% 58%, rgba(128, 128, 128, 0.35) 59% 61%, transparent 62%);
+    background-size: 64px 32px;
+}
+
+.banner-previa.com-imagem {
+    background-size: cover;
+    background-position: center;
+}
+
+.grupo-campo {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.modal-perfil {
+    max-width: 680px;
+    padding: 1.2rem 1rem 1.4rem;
+    justify-items: stretch;
+    text-align: left;
+}
+
+.modal-perfil .perfil-cartao,
+.modal-perfil .perfil-bloco {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+}
+
+.modal-perfil .perfil-cartao {
+    border: 1px solid var(--linha-forte);
+}
+
+.modal-perfil .modal-acoes {
+    justify-content: center;
+}
+
+/* pop-up de ajuste da foto e do banner */
+.ajuste-quadro {
+    position: relative;
+    width: min(100%, 300px);
+    margin: 0.4rem auto;
+    overflow: hidden;
+    background: var(--inverso-bg);
+    border: 1px solid var(--linha-forte);
+    border-radius: 2px;
+    cursor: grab;
+    touch-action: none;
+}
+
+.ajuste-quadro.arrastando {
+    cursor: grabbing;
+}
+
+.ajuste-quadro:focus-visible {
+    outline: 3px solid var(--linha-forte);
+    outline-offset: 3px;
+}
+
+.ajuste-foto {
+    aspect-ratio: 1 / 1;
+}
+
+.ajuste-banner {
+    width: 100%;
+    aspect-ratio: 4 / 1;
+}
+
+.ajuste-mascara {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.ajuste-foto .ajuste-mascara {
+    border-radius: 50%;
+    box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.6);
+    border: 2px solid #fff;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--linha-forte);
+}
+
+/* pop-up animado dos 7 dias */
+.modal-espera {
+    max-width: 420px;
+}
+
+.ampulheta {
+    width: 4.6rem;
+    height: 4.6rem;
+    animation: virar-ampulheta 3.2s ease-in-out 0.5s infinite;
+}
+
+.ampulheta svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.amp-vidro {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.amp-areia-cima,
+.amp-areia-baixo {
+    fill: currentColor;
+    transform-box: fill-box;
+}
+
+.amp-areia-cima {
+    transform-origin: 50% 100%;
+    animation: areia-cima 3.2s ease-in-out 0.5s infinite;
+}
+
+.amp-areia-baixo {
+    transform-origin: 50% 100%;
+    animation: areia-baixo 3.2s ease-in-out 0.5s infinite;
+}
+
+.amp-fio {
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-dasharray: 2 3;
+    animation: fio-areia 0.6s linear infinite;
+}
+
+.modal-espera h2 {
+    animation: tremer 0.5s ease 0.2s both;
+}
+
+.espera-faltam {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.espera-faltam strong {
+    font-family: var(--fonte-titulo);
+    font-size: 3.4rem;
+    line-height: 1;
+}
+
+.espera-faltam span {
+    font-weight: 700;
+}
+
+.espera-pontos {
+    display: flex;
+    gap: 0.45rem;
+}
+
+.ponto-dia {
+    width: 0.9rem;
+    height: 0.9rem;
+    border: 2px solid var(--linha-forte);
+    border-radius: 50%;
+    animation: pop 0.5s ease both;
+}
+
+.ponto-dia.passado {
+    background: var(--linha-forte);
+}
+
+@keyframes virar-ampulheta {
+    0%, 70% { transform: rotate(0); }
+    90%, 100% { transform: rotate(180deg); }
+}
+
+@keyframes areia-cima {
+    0% { transform: scaleY(1); }
+    70%, 100% { transform: scaleY(0.05); }
+}
+
+@keyframes areia-baixo {
+    0% { transform: scaleY(0.05); }
+    70%, 100% { transform: scaleY(1); }
+}
+
+@keyframes fio-areia {
+    to { stroke-dashoffset: -5; }
+}
+
+/* aviso rápido (emblema novo, perfil atualizado...) */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.4rem;
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0.8rem 1.3rem;
+    font-weight: 700;
+    color: var(--inverso-fg);
+    background: var(--inverso-bg);
+    border: 1.5px solid var(--linha-forte);
+    border-radius: 3px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.toast .emblema-icone {
+    --tam: 30px;
+}
+
+@media (max-width: 700px) {
+    .perfil-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .perfil-modos,
+    .emblemas-grade {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-topo {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 0 1rem;
+    }
+
+    .perfil-ident {
+        padding-top: 0;
+    }
+
+    .perfil-bio {
+        padding: 1rem 1rem 1.4rem;
+    }
+
+    .login-card {
+        padding: 2rem 1.2rem 1.5rem;
     }
 }
 
