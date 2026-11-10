@@ -1,4 +1,21 @@
-from flask import Flask, jsonify, request
+import base64
+import binascii
+import json
+import math
+import os
+import re
+import secrets
+import sqlite3
+import time
+import unicodedata
+import urllib.parse
+import urllib.request
+from datetime import datetime, timedelta, timezone
+from functools import wraps
+
+from flask import Flask, g, jsonify, request
+from itsdangerous import BadSignature, URLSafeTimedSerializer
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 #--------------------------+
@@ -265,8 +282,923 @@ def verificar_resposta():
         "mensagem": mensagem,
         "explicacao": explicacao
     })
-    
 
+
+
+
+#--------------------------+
+# BANCO DE DADOS (SQLite)
+#--------------------------+
+# O banco fica no arquivo quiz.db, na mesma pasta do app.py. Ele é criado sozinho
+# na primeira vez que a API roda, não precisa instalar nada.
+# As tabelas usuario, login e ranking seguem os nomes do doc_date/08-extensao.
+
+PASTA = os.path.dirname(os.path.abspath(__file__))
+CAMINHO_BANCO = os.path.join(PASTA, "quiz.db")
+CAMINHO_CHAVE = os.path.join(PASTA, "quiz_secret.key")
+
+# Para o login com Google funcionar, coloque aqui o "ID do cliente" criado no Google Cloud
+# (ou defina a variável de ambiente GOOGLE_CLIENT_ID). Passo a passo no README.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+
+DIAS_ENTRE_TROCAS = 7            # tempo de espera para trocar nickname / senha de novo
+VALIDADE_SESSAO = 60 * 60 * 24 * 30   # o login vale por 30 dias
+MODOS = ("facil", "normal", "dificil")
+AVATARES_PADRAO = ["侍", "猫", "狐", "龍", "桜", "月", "鬼", "鯉"]   # mesmos do script.js
+
+app.config["MAX_CONTENT_LENGTH"] = 2560 * 1024   # 2,5 MB por requisição (foto + banner, que podem ser GIF)
+
+ESQUEMA = """
+-- Dados de usuários
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario    INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome          TEXT NOT NULL,                -- guarda o mesmo nickname do login (como no 08-extensao)
+    email         TEXT NOT NULL UNIQUE,         -- sempre em minúsculo, não pode repetir
+    tipo_conta    TEXT NOT NULL DEFAULT 'site', -- 'site' (cadastro pelo Quiz) ou 'google'
+    google_id     TEXT UNIQUE,                  -- só preenchido nas contas do Google
+    foto          TEXT,                         -- 'preset:侍' ou uma imagem em base64
+    banner        TEXT,                         -- imagem em base64 (opcional)
+    biografia     TEXT NOT NULL DEFAULT '',
+    pronomes      TEXT NOT NULL DEFAULT '',     -- ex.: 'ele/dele' (opcional, aparece ao lado do nickname)
+    data_cadastro TEXT NOT NULL,
+    CONSTRAINT ck_usuario_tipo  CHECK (tipo_conta IN ('site', 'google')),
+    CONSTRAINT ck_usuario_email CHECK (email = lower(email))
+);
+
+-- Dados de login (a senha fica só como hash, e é NULL nas contas do Google)
+CREATE TABLE IF NOT EXISTS login (
+    id_login           INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_usuario         INTEGER NOT NULL UNIQUE,
+    nome_login         TEXT NOT NULL UNIQUE,    -- o nickname, também aparece no ranking
+    senha_hash         TEXT,
+    data_ultimo_acesso TEXT,
+    data_troca_nome    TEXT,                    -- última vez que trocou o nickname (regra dos 7 dias)
+    data_troca_senha   TEXT,                    -- última vez que trocou a senha (regra dos 7 dias)
+    CONSTRAINT ck_login_nome CHECK (length(nome_login) BETWEEN 3 AND 20 AND nome_login NOT GLOB '*[^a-z0-9_]*'),
+    CONSTRAINT fk_login_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
+);
+
+-- Cada linha é uma partida terminada
+CREATE TABLE IF NOT EXISTS ranking (
+    id_ranking      INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_usuario      INTEGER NOT NULL,
+    modo            TEXT NOT NULL,
+    acertos         INTEGER NOT NULL,
+    total_perguntas INTEGER NOT NULL,
+    data_partida    TEXT NOT NULL,
+    CONSTRAINT ck_ranking_modo    CHECK (modo IN ('facil', 'normal', 'dificil')),
+    CONSTRAINT ck_ranking_total   CHECK (total_perguntas > 0),
+    CONSTRAINT ck_ranking_acertos CHECK (acertos >= 0 AND acertos <= total_perguntas),
+    CONSTRAINT fk_ranking_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_ranking_modo_acertos ON ranking (modo, acertos DESC);
+CREATE INDEX IF NOT EXISTS idx_ranking_usuario ON ranking (id_usuario);
+
+-- Emblemas (insígnias) que existem no Quiz
+CREATE TABLE IF NOT EXISTS emblema (
+    id_emblema INTEGER PRIMARY KEY AUTOINCREMENT,
+    codigo     TEXT NOT NULL UNIQUE,
+    nome       TEXT NOT NULL,
+    descricao  TEXT NOT NULL
+);
+
+-- Quais emblemas cada usuário tem
+CREATE TABLE IF NOT EXISTS usuario_emblema (
+    id_usuario     INTEGER NOT NULL,
+    id_emblema     INTEGER NOT NULL,
+    data_conquista TEXT NOT NULL,
+    CONSTRAINT pk_usuario_emblema PRIMARY KEY (id_usuario, id_emblema),
+    CONSTRAINT fk_ue_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE,
+    CONSTRAINT fk_ue_emblema FOREIGN KEY (id_emblema) REFERENCES emblema (id_emblema)
+);
+"""
+
+EMBLEMAS = [
+    ("GENNIS_ACCOUNT", "GennisAccount", "Criou a conta direto no site do GennisQuiz."),
+    ("GOOGLE_ACCOUNT", "GoogleAccount", "Entrou no GennisQuiz com uma conta do Google."),
+    ("TOP_1", "Top 1", "Está em 1º lugar no ranking geral. Coroa de ouro!"),
+    ("TOP_2", "Top 2", "Está em 2º lugar no ranking geral. Coroa de prata!"),
+    ("TOP_3", "Top 3", "Está em 3º lugar no ranking geral. Coroa de bronze!"),
+]
+
+
+def iniciar_banco():
+    db = sqlite3.connect(CAMINHO_BANCO)
+    db.executescript(ESQUEMA)
+    # bancos criados antes da coluna "pronomes" ganham ela aqui, sem perder nenhum dado
+    colunas = [linha[1] for linha in db.execute("PRAGMA table_info(usuario)")]
+    if "pronomes" not in colunas:
+        db.execute("ALTER TABLE usuario ADD COLUMN pronomes TEXT NOT NULL DEFAULT ''")
+    db.executemany("INSERT OR IGNORE INTO emblema (codigo, nome, descricao) VALUES (?, ?, ?)", EMBLEMAS)
+    db.commit()
+    db.close()
+
+
+def get_db():
+    # uma conexão por requisição (o Flask fecha ela no final)
+    if "db" not in g:
+        g.db = sqlite3.connect(CAMINHO_BANCO)
+        g.db.row_factory = sqlite3.Row
+        g.db.execute("PRAGMA foreign_keys = ON")    # precisa para o ON DELETE CASCADE funcionar
+        g.db.execute("PRAGMA secure_delete = ON")   # o que for apagado é sobrescrito no arquivo
+    return g.db
+
+
+@app.teardown_appcontext
+def fechar_db(erro):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
+
+
+#--------------------------+
+# CHAVE SECRETA, CORS E FUNÇÕES AUXILIARES
+#--------------------------+
+def carregar_chave():
+    chave = os.environ.get("GENNISQUIZ_SECRET")
+    if chave:
+        return chave
+    if not os.path.exists(CAMINHO_CHAVE):
+        try:
+            with open(CAMINHO_CHAVE, "x") as arquivo:
+                arquivo.write(secrets.token_hex(32))
+            os.chmod(CAMINHO_CHAVE, 0o600)
+        except (FileExistsError, OSError):
+            pass
+    with open(CAMINHO_CHAVE) as arquivo:
+        return arquivo.read().strip()
+
+
+serializador = URLSafeTimedSerializer(carregar_chave())
+
+
+@app.after_request
+def liberar_cors(resposta):
+    # o site (index.html) abre em outro endereço que a API, então o navegador exige isso
+    resposta.headers["Access-Control-Allow-Origin"] = "*"
+    resposta.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    resposta.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    return resposta
+
+
+@app.errorhandler(413)
+def arquivo_grande(erro):
+    return jsonify({"erro": "Imagem grande demais. Escolha uma imagem menor."}), 413
+
+
+def erro(mensagem, codigo=400, **extra):
+    return jsonify({"erro": mensagem, **extra}), codigo
+
+
+def pegar_json():
+    dados = request.get_json(silent=True)
+    return dados if isinstance(dados, dict) else None
+
+
+def agora():
+    return datetime.now(timezone.utc)
+
+
+def texto_data(data):
+    return data.isoformat(timespec="seconds")
+
+
+def ler_data(texto):
+    return datetime.fromisoformat(texto) if texto else None
+
+
+def nickname_valido(nickname):
+    return isinstance(nickname, str) and re.fullmatch(r"[a-z0-9_]{3,20}", nickname) is not None
+
+
+def email_valido(email):
+    return isinstance(email, str) and len(email) <= 120 and re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email) is not None
+
+
+def senha_valida(senha):
+    return isinstance(senha, str) and 6 <= len(senha) <= 100
+
+
+def normalizar_nickname(texto):
+    # "Matheus P." vira "matheus_p" (mesma regra do script.js)
+    texto = unicodedata.normalize("NFD", str(texto))
+    texto = "".join(c for c in texto if not unicodedata.combining(c))
+    texto = re.sub(r"\s+", "_", texto.lower().strip())
+    return re.sub(r"[^a-z0-9_]", "", texto)[:20]
+
+
+ASSINATURAS_IMAGEM = {
+    "png": (b"\x89PNG",),
+    "jpeg": (b"\xff\xd8",),
+    "gif": (b"GIF8",),
+    "webp": (b"RIFF",),
+}
+
+
+def ajuste_valido(texto):
+    # o enquadramento escolhido no pop-up de ajuste vai no fim da imagem: #a=zoom,x,y,proporção
+    achou = re.fullmatch(r"a=(\d{1,2}(?:\.\d{1,4})?),(\d(?:\.\d{1,4})?),(\d(?:\.\d{1,4})?),(\d{1,3}(?:\.\d{1,6})?)", texto)
+    if not achou:
+        return False
+    zoom, x, y, proporcao = (float(n) for n in achou.groups())
+    return 1 <= zoom <= 5 and 0 <= x <= 1 and 0 <= y <= 1 and 0.05 <= proporcao <= 50
+
+
+def imagem_valida(valor, limite, aceita_padrao=False):
+    # aceita 'preset:侍' (só na foto) ou uma imagem em base64 (data URL, PNG/JPG/WEBP/GIF)
+    # de até "limite" caracteres, com o enquadramento (#a=...) opcional no final
+    if not isinstance(valor, str):
+        return False
+    if aceita_padrao and valor.startswith("preset:"):
+        return valor[len("preset:"):] in AVATARES_PADRAO
+    if len(valor) > limite:
+        return False
+    valor, separador, ajuste = valor.partition("#")
+    if separador and not ajuste_valido(ajuste):
+        return False
+    achou = re.fullmatch(r"data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/]+={0,2})", valor)
+    if not achou:
+        return False
+    try:
+        conteudo = base64.b64decode(achou.group(2), validate=True)
+    except (binascii.Error, ValueError):
+        return False
+    # confere se o começo do arquivo bate com o tipo que a imagem diz ser
+    if not conteudo.startswith(ASSINATURAS_IMAGEM[achou.group(1)]):
+        return False
+    if achou.group(1) == "webp" and conteudo[8:12] != b"WEBP":
+        return False
+    return True
+
+
+# tamanhos máximos (em caracteres do base64). A foto vai junto de cada jogador no ranking,
+# então fica menor; o banner só aparece no perfil e pode ser um GIF maior.
+LIMITE_FOTO = 350_000
+LIMITE_BANNER = 1_400_000
+
+
+def limpar_biografia(texto):
+    # mantém as quebras de linha (no máximo uma linha em branco seguida) e tira o resto de espaço sobrando
+    texto = texto.replace("\r\n", "\n").replace("\r", "\n")
+    texto = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", texto)
+    linhas = [re.sub(r"[ \t]+", " ", linha).strip() for linha in texto.split("\n")]
+    texto = "\n".join(linhas).strip()
+    return re.sub(r"\n{3,}", "\n\n", texto)
+
+
+def limpar_pronomes(texto):
+    texto = re.sub(r"[\x00-\x1f\x7f]", "", texto)
+    return re.sub(r"\s+", " ", texto).strip()
+
+
+# tentativas erradas de login ficam só na memória (zera quando a API reinicia)
+FALHAS = {}
+
+
+def bloqueado(chave, limite):
+    recentes = [t for t in FALHAS.get(chave, []) if t > time.time() - 600]
+    FALHAS[chave] = recentes
+    return len(recentes) >= limite
+
+
+def registrar_falha(chave):
+    FALHAS.setdefault(chave, []).append(time.time())
+
+
+def criar_sessao(id_usuario):
+    return serializador.dumps({"id": id_usuario}, salt="sessao")
+
+
+def login_obrigatorio(funcao):
+    @wraps(funcao)
+    def interna(*args, **kwargs):
+        cabecalho = request.headers.get("Authorization", "")
+        if not cabecalho.startswith("Bearer "):
+            return erro("Faça login para continuar", 401, sessao_invalida=True)
+        try:
+            dados = serializador.loads(cabecalho[7:], salt="sessao", max_age=VALIDADE_SESSAO)
+        except BadSignature:
+            return erro("Sessão expirada. Entre novamente", 401, sessao_invalida=True)
+
+        usuario = buscar_usuario(get_db(), dados.get("id"))
+        if usuario is None:
+            return erro("Conta não encontrada", 401, sessao_invalida=True)
+        g.usuario = usuario
+        return funcao(*args, **kwargs)
+    return interna
+
+
+def buscar_usuario(db, id_usuario):
+    return db.execute(
+        "SELECT u.*, l.nome_login, l.senha_hash, l.data_troca_nome, l.data_troca_senha "
+        "FROM usuario u JOIN login l ON l.id_usuario = u.id_usuario WHERE u.id_usuario = ?",
+        (id_usuario,)
+    ).fetchone()
+
+
+def buscar_por_identificador(db, identificador):
+    # entra com e-mail ou com nickname
+    return db.execute(
+        "SELECT u.*, l.nome_login, l.senha_hash, l.data_troca_nome, l.data_troca_senha "
+        "FROM usuario u JOIN login l ON l.id_usuario = u.id_usuario "
+        "WHERE u.email = ? OR l.nome_login = ?",
+        (identificador, identificador)
+    ).fetchone()
+
+
+def verificar_espera(data_ultima_troca):
+    # devolve (libera_em, dias_restantes) se ainda estiver nos 7 dias, ou None se já pode trocar
+    if not data_ultima_troca:
+        return None
+    libera_em = ler_data(data_ultima_troca) + timedelta(days=DIAS_ENTRE_TROCAS)
+    falta = (libera_em - agora()).total_seconds()
+    if falta <= 0:
+        return None
+    return libera_em, math.ceil(falta / 86400)
+
+
+def erro_espera(o_que, espera):
+    libera_em, dias = espera
+    return erro(
+        f"Você só pode alterar {o_que} novamente depois de {DIAS_ENTRE_TROCAS} dias.",
+        429, dias_restantes=dias, libera_em=texto_data(libera_em), dias_total=DIAS_ENTRE_TROCAS
+    )
+
+
+#--------------------------+
+# RANKING E EMBLEMAS
+#--------------------------+
+def ranking_melhores(db, modo=None):
+    # melhor partida de cada jogador (mais acertos; empate: quem fez primeiro), já em ordem de ranking
+    filtro = "WHERE r.modo = ?" if modo else ""
+    parametros = (modo,) if modo else ()
+    return db.execute(
+        "SELECT t.id_usuario, l.nome_login AS jogador, u.foto, t.modo, t.acertos, t.total_perguntas, t.data_partida "
+        "FROM ("
+        "  SELECT r.*, ROW_NUMBER() OVER ("
+        "    PARTITION BY r.id_usuario ORDER BY r.acertos DESC, r.data_partida ASC, r.id_ranking ASC"
+        "  ) AS rn FROM ranking r " + filtro +
+        ") t "
+        "JOIN login l ON l.id_usuario = t.id_usuario "
+        "JOIN usuario u ON u.id_usuario = t.id_usuario "
+        "WHERE t.rn = 1 "
+        "ORDER BY t.acertos DESC, t.data_partida ASC, t.id_ranking ASC",
+        parametros
+    ).fetchall()
+
+
+def dar_emblema(db, id_usuario, codigo):
+    # devolve True se o usuário ainda não tinha esse emblema
+    id_emblema = db.execute("SELECT id_emblema FROM emblema WHERE codigo = ?", (codigo,)).fetchone()["id_emblema"]
+    cursor = db.execute(
+        "INSERT OR IGNORE INTO usuario_emblema (id_usuario, id_emblema, data_conquista) VALUES (?, ?, ?)",
+        (id_usuario, id_emblema, texto_data(agora()))
+    )
+    return cursor.rowcount > 0
+
+
+def sincronizar_emblemas_top(db):
+    # Top 1, 2 e 3 do ranking geral. Quem sai do top perde o emblema e quem entra ganha.
+    # Devolve a lista de (id_usuario, codigo) que foram entregues agora.
+    top = ranking_melhores(db)[:3]
+    novos = []
+    for posicao in (1, 2, 3):
+        codigo = "TOP_%d" % posicao
+        dono = top[posicao - 1]["id_usuario"] if len(top) >= posicao else None
+        if dono is None:
+            db.execute("DELETE FROM usuario_emblema WHERE id_emblema = (SELECT id_emblema FROM emblema WHERE codigo = ?)", (codigo,))
+            continue
+        db.execute(
+            "DELETE FROM usuario_emblema WHERE id_usuario <> ? "
+            "AND id_emblema = (SELECT id_emblema FROM emblema WHERE codigo = ?)",
+            (dono, codigo)
+        )
+        if dar_emblema(db, dono, codigo):
+            novos.append((dono, codigo))
+    return novos
+
+
+#--------------------------+
+# PERFIL
+#--------------------------+
+def montar_perfil(db, id_usuario, privado=False):
+    usuario = buscar_usuario(db, id_usuario)
+    if usuario is None:
+        return None
+
+    geral = ranking_melhores(db)
+    posicao = next((i + 1 for i, r in enumerate(geral) if r["id_usuario"] == id_usuario), None)
+
+    contagem = {linha["modo"]: linha["qtd"] for linha in db.execute(
+        "SELECT modo, COUNT(*) AS qtd FROM ranking WHERE id_usuario = ? GROUP BY modo", (id_usuario,))}
+
+    modos = {}
+    for modo in MODOS:
+        lista = ranking_melhores(db, modo)
+        indice = next((i for i, r in enumerate(lista) if r["id_usuario"] == id_usuario), None)
+        modos[modo] = None if indice is None else {
+            "acertos": lista[indice]["acertos"],
+            "total_perguntas": lista[indice]["total_perguntas"],
+            "posicao": indice + 1,
+            "partidas": contagem.get(modo, 0)
+        }
+
+    ultimas = [dict(p) for p in db.execute(
+        "SELECT modo, acertos, total_perguntas, data_partida FROM ranking WHERE id_usuario = ? "
+        "ORDER BY data_partida DESC, id_ranking DESC LIMIT 5", (id_usuario,))]
+
+    emblemas = [dict(e) for e in db.execute(
+        "SELECT e.codigo, e.nome, e.descricao, ue.data_conquista FROM usuario_emblema ue "
+        "JOIN emblema e ON e.id_emblema = ue.id_emblema WHERE ue.id_usuario = ? ORDER BY e.id_emblema",
+        (id_usuario,))]
+
+    perfil = {
+        "nickname": usuario["nome_login"],
+        "biografia": usuario["biografia"],
+        "pronomes": usuario["pronomes"],
+        "foto": usuario["foto"],
+        "banner": usuario["banner"],
+        "tipo_conta": usuario["tipo_conta"],
+        "data_cadastro": usuario["data_cadastro"],
+        "posicao_geral": posicao,
+        "top": posicao if posicao is not None and posicao <= 3 else None,
+        "melhor": None if posicao is None else {
+            "acertos": geral[posicao - 1]["acertos"],
+            "total_perguntas": geral[posicao - 1]["total_perguntas"],
+            "modo": geral[posicao - 1]["modo"]
+        },
+        "jogadores_no_ranking": len(geral),
+        "modos": modos,
+        "total_partidas": sum(contagem.values()),
+        "ultimas_partidas": ultimas,
+        "emblemas": emblemas
+    }
+
+    if privado:
+        # só o próprio dono da conta recebe estes dados
+        espera_nome = verificar_espera(usuario["data_troca_nome"])
+        espera_senha = verificar_espera(usuario["data_troca_senha"])
+        perfil["email"] = usuario["email"]
+        perfil["pode_trocar_senha"] = usuario["tipo_conta"] == "site"
+        perfil["proxima_troca_nickname"] = texto_data(espera_nome[0]) if espera_nome else None
+        perfil["proxima_troca_senha"] = texto_data(espera_senha[0]) if espera_senha else None
+        perfil["dias_entre_trocas"] = DIAS_ENTRE_TROCAS
+    return perfil
+
+
+def resposta_sessao(db, id_usuario, codigo_status=200, emblemas_novos=()):
+    return jsonify({
+        "token": criar_sessao(id_usuario),
+        "usuario": montar_perfil(db, id_usuario, privado=True),
+        "emblemas_novos": list(emblemas_novos)
+    }), codigo_status
+
+
+#--------------------------+
+# (API) CONFIGURAÇÃO E NICKNAME
+#--------------------------+
+@app.route("/api/config", methods=["GET"])
+def configuracao():
+    return jsonify({
+        "google_client_id": GOOGLE_CLIENT_ID or None,
+        "dias_entre_trocas": DIAS_ENTRE_TROCAS
+    })
+
+
+@app.route("/api/nickname/disponivel", methods=["GET"])
+def nickname_disponivel():
+    nickname = normalizar_nickname(request.args.get("nome", ""))
+
+    if not nickname_valido(nickname):
+        return jsonify({"nickname": nickname, "valido": False, "disponivel": False})
+
+    existe = get_db().execute("SELECT 1 FROM login WHERE nome_login = ?", (nickname,)).fetchone()
+    return jsonify({"nickname": nickname, "valido": True, "disponivel": existe is None})
+
+
+#--------------------------+
+# (API) CADASTRO E LOGIN
+#--------------------------+
+def criar_conta(db, nickname, email, tipo_conta, senha_hash, foto, google_id=None):
+    # grava usuario + login + emblema da conta na mesma transação (se der erro em um, volta tudo)
+    with db:
+        cursor = db.execute(
+            "INSERT INTO usuario (nome, email, tipo_conta, google_id, foto, data_cadastro) VALUES (?, ?, ?, ?, ?, ?)",
+            (nickname, email, tipo_conta, google_id, foto, texto_data(agora()))
+        )
+        id_usuario = cursor.lastrowid
+        db.execute(
+            "INSERT INTO login (id_usuario, nome_login, senha_hash, data_ultimo_acesso) VALUES (?, ?, ?, ?)",
+            (id_usuario, nickname, senha_hash, texto_data(agora()))
+        )
+        dar_emblema(db, id_usuario, "GENNIS_ACCOUNT" if tipo_conta == "site" else "GOOGLE_ACCOUNT")
+    return id_usuario
+
+
+def erro_de_duplicado(db, nickname, email):
+    if db.execute("SELECT 1 FROM login WHERE nome_login = ?", (nickname,)).fetchone():
+        return erro("Este nickname já está sendo utilizado por outro usuário", 409)
+    return erro("Este e-mail já está cadastrado", 409)
+
+
+@app.route("/api/cadastro", methods=["POST"])
+def cadastrar():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    nickname = normalizar_nickname(dados.get("nickname", ""))
+    email = str(dados.get("email", "")).strip().lower()
+    senha = dados.get("senha")
+    foto = dados.get("foto") or "preset:" + AVATARES_PADRAO[0]
+
+    if not nickname_valido(nickname):
+        return erro("Use de 3 a 20 letras, números ou _ (sem acentos) no nickname")
+    if not email_valido(email):
+        return erro("E-mail inválido")
+    if not senha_valida(senha):
+        return erro("A senha precisa ter de 6 a 100 caracteres")
+    if not imagem_valida(foto, LIMITE_FOTO, aceita_padrao=True):
+        return erro("Foto de perfil inválida")
+
+    db = get_db()
+    if db.execute("SELECT 1 FROM login WHERE nome_login = ?", (nickname,)).fetchone():
+        return erro("Este nickname já está sendo utilizado por outro usuário", 409)
+    if db.execute("SELECT 1 FROM usuario WHERE email = ?", (email,)).fetchone():
+        return erro("Este e-mail já está cadastrado", 409)
+
+    try:
+        id_usuario = criar_conta(db, nickname, email, "site", generate_password_hash(senha), foto)
+    except sqlite3.IntegrityError:
+        # dois cadastros iguais ao mesmo tempo
+        return erro_de_duplicado(db, nickname, email)
+
+    return resposta_sessao(db, id_usuario, 201, ["GENNIS_ACCOUNT"])
+
+
+# hash de mentira, só para o login demorar o mesmo tempo quando o usuário não existe
+HASH_FALSO = generate_password_hash("senha-que-ninguem-usa")
+
+
+@app.route("/api/login", methods=["POST"])
+def entrar():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    identificador = str(dados.get("identificador", "")).strip().lower()
+    senha = dados.get("senha")
+    if not identificador or not isinstance(senha, str) or not senha:
+        return erro("Informe o e-mail ou nickname e a senha")
+
+    chave_id = ("login", identificador)
+    chave_ip = ("login-ip", request.remote_addr)
+    if bloqueado(chave_id, 8) or bloqueado(chave_ip, 30):
+        return erro("Muitas tentativas erradas. Aguarde alguns minutos e tente de novo", 429)
+
+    db = get_db()
+    usuario = buscar_por_identificador(db, identificador)
+
+    if usuario is not None and usuario["senha_hash"] is None:
+        return erro("Esta conta foi criada com o Google. Use o botão \"Continuar com o Google\"", 400)
+
+    if usuario is None:
+        check_password_hash(HASH_FALSO, senha)
+    if usuario is None or not check_password_hash(usuario["senha_hash"], senha):
+        registrar_falha(chave_id)
+        registrar_falha(chave_ip)
+        return erro("E-mail/nickname ou senha incorretos", 401)
+
+    FALHAS.pop(chave_id, None)
+    with db:
+        db.execute("UPDATE login SET data_ultimo_acesso = ? WHERE id_usuario = ?",
+                   (texto_data(agora()), usuario["id_usuario"]))
+    return resposta_sessao(db, usuario["id_usuario"])
+
+
+#--------------------------+
+# (API) LOGIN COM GOOGLE
+#--------------------------+
+def verificar_token_google(credencial):
+    # pergunta para o Google se o token é de verdade; devolve {sub, email} ou None
+    if not GOOGLE_CLIENT_ID or not isinstance(credencial, str) or not credencial:
+        return None
+    try:
+        url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + urllib.parse.quote(credencial)
+        with urllib.request.urlopen(url, timeout=6) as resposta:
+            info = json.loads(resposta.read().decode("utf-8"))
+        if info.get("aud") != GOOGLE_CLIENT_ID:
+            return None
+        if info.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
+            return None
+        if str(info.get("email_verified")).lower() != "true":
+            return None
+        if int(info.get("exp", 0)) < time.time():
+            return None
+        return {"sub": str(info["sub"]), "email": str(info["email"]).strip().lower()}
+    except Exception:
+        return None
+
+
+@app.route("/api/login/google", methods=["POST"])
+def entrar_com_google():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+    if not GOOGLE_CLIENT_ID:
+        return erro("O login com Google ainda não foi configurado neste servidor", 503)
+
+    info = verificar_token_google(dados.get("credencial"))
+    if info is None:
+        return erro("Não foi possível confirmar a conta do Google", 401)
+
+    db = get_db()
+    usuario = db.execute("SELECT id_usuario FROM usuario WHERE google_id = ?", (info["sub"],)).fetchone()
+
+    if usuario is not None:
+        # já tem conta: entra direto
+        with db:
+            db.execute("UPDATE login SET data_ultimo_acesso = ? WHERE id_usuario = ?",
+                       (texto_data(agora()), usuario["id_usuario"]))
+        return resposta_sessao(db, usuario["id_usuario"])
+
+    if db.execute("SELECT 1 FROM usuario WHERE email = ?", (info["email"],)).fetchone():
+        return erro("Este e-mail já tem uma conta cadastrada no site. Entre com o e-mail e a senha", 409)
+
+    # primeira vez: o usuário ainda precisa escolher nickname e foto (mesmo procedimento do cadastro)
+    return jsonify({
+        "novo": True,
+        "email": info["email"],
+        "sugestao": normalizar_nickname(info["email"].split("@")[0]),
+        "cadastro_token": serializador.dumps(info, salt="google-cadastro")
+    })
+
+
+@app.route("/api/login/google/completar", methods=["POST"])
+def completar_cadastro_google():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    try:
+        info = serializador.loads(str(dados.get("cadastro_token", "")), salt="google-cadastro", max_age=900)
+    except BadSignature:
+        return erro("O tempo para concluir o cadastro acabou. Entre com o Google de novo", 401)
+
+    nickname = normalizar_nickname(dados.get("nickname", ""))
+    foto = dados.get("foto") or "preset:" + AVATARES_PADRAO[0]
+
+    if not nickname_valido(nickname):
+        return erro("Use de 3 a 20 letras, números ou _ (sem acentos) no nickname")
+    if not imagem_valida(foto, LIMITE_FOTO, aceita_padrao=True):
+        return erro("Foto de perfil inválida")
+
+    db = get_db()
+    if db.execute("SELECT 1 FROM usuario WHERE google_id = ? OR email = ?", (info["sub"], info["email"])).fetchone():
+        return erro("Esta conta do Google já foi cadastrada. Entre novamente", 409)
+    if db.execute("SELECT 1 FROM login WHERE nome_login = ?", (nickname,)).fetchone():
+        return erro("Este nickname já está sendo utilizado por outro usuário", 409)
+
+    try:
+        id_usuario = criar_conta(db, nickname, info["email"], "google", None, foto, google_id=info["sub"])
+    except sqlite3.IntegrityError:
+        return erro_de_duplicado(db, nickname, info["email"])
+
+    return resposta_sessao(db, id_usuario, 201, ["GOOGLE_ACCOUNT"])
+
+
+#--------------------------+
+# (API) PERFIL
+#--------------------------+
+@app.route("/api/eu", methods=["GET"])
+@login_obrigatorio
+def meu_perfil():
+    return jsonify(montar_perfil(get_db(), g.usuario["id_usuario"], privado=True))
+
+
+@app.route("/api/perfil/<nickname>", methods=["GET"])
+@login_obrigatorio
+def ver_perfil(nickname):
+    db = get_db()
+    linha = db.execute("SELECT id_usuario FROM login WHERE nome_login = ?", (nickname.lower(),)).fetchone()
+    if linha is None:
+        return erro("Usuário não encontrado", 404)
+    return jsonify(montar_perfil(db, linha["id_usuario"]))
+
+
+@app.route("/api/eu", methods=["PUT"])
+@login_obrigatorio
+def atualizar_perfil():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    campos = {}
+
+    if "biografia" in dados:
+        biografia = dados["biografia"]
+        if not isinstance(biografia, str):
+            return erro("Biografia inválida")
+        biografia = limpar_biografia(biografia)
+        if len(biografia) > 200:
+            return erro("A biografia pode ter no máximo 200 caracteres")
+        campos["biografia"] = biografia
+
+    if "pronomes" in dados:
+        pronomes = dados["pronomes"]
+        if not isinstance(pronomes, str):
+            return erro("Pronome inválido")
+        pronomes = limpar_pronomes(pronomes)
+        if len(pronomes) > 20:
+            return erro("O pronome pode ter no máximo 20 caracteres")
+        campos["pronomes"] = pronomes
+
+    if "foto" in dados:
+        if not imagem_valida(dados["foto"], LIMITE_FOTO, aceita_padrao=True):
+            return erro("Foto de perfil inválida")
+        campos["foto"] = dados["foto"]
+
+    if "banner" in dados:
+        if dados["banner"] in (None, ""):
+            campos["banner"] = None      # remove o banner
+        elif imagem_valida(dados["banner"], LIMITE_BANNER):
+            campos["banner"] = dados["banner"]
+        else:
+            return erro("Banner inválido")
+
+    if not campos:
+        return erro("Nada para atualizar")
+
+    db = get_db()
+    with db:
+        # os nomes das colunas vêm só do dicionário acima (nunca do usuário)
+        colunas = ", ".join("%s = ?" % coluna for coluna in campos)
+        db.execute("UPDATE usuario SET " + colunas + " WHERE id_usuario = ?",
+                   (*campos.values(), g.usuario["id_usuario"]))
+    return jsonify(montar_perfil(db, g.usuario["id_usuario"], privado=True))
+
+
+@app.route("/api/eu/nickname", methods=["PUT"])
+@login_obrigatorio
+def trocar_nickname():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    espera = verificar_espera(g.usuario["data_troca_nome"])
+    if espera:
+        return erro_espera("o nickname", espera)
+
+    nickname = normalizar_nickname(dados.get("nickname", ""))
+    if not nickname_valido(nickname):
+        return erro("Use de 3 a 20 letras, números ou _ (sem acentos) no nickname")
+    if nickname == g.usuario["nome_login"]:
+        return erro("Esse já é o seu nickname atual")
+
+    db = get_db()
+    if db.execute("SELECT 1 FROM login WHERE nome_login = ?", (nickname,)).fetchone():
+        return erro("Este nickname já está sendo utilizado por outro usuário", 409)
+
+    try:
+        with db:
+            db.execute("UPDATE login SET nome_login = ?, data_troca_nome = ? WHERE id_usuario = ?",
+                       (nickname, texto_data(agora()), g.usuario["id_usuario"]))
+            db.execute("UPDATE usuario SET nome = ? WHERE id_usuario = ?", (nickname, g.usuario["id_usuario"]))
+    except sqlite3.IntegrityError:
+        return erro("Este nickname já está sendo utilizado por outro usuário", 409)
+
+    return jsonify(montar_perfil(db, g.usuario["id_usuario"], privado=True))
+
+
+@app.route("/api/eu/senha", methods=["PUT"])
+@login_obrigatorio
+def trocar_senha():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    if g.usuario["tipo_conta"] != "site":
+        return erro("Contas do Google não têm senha no Quiz. Altere a senha direto na sua conta Google")
+
+    espera = verificar_espera(g.usuario["data_troca_senha"])
+    if espera:
+        return erro_espera("a senha", espera)
+
+    senha_atual = dados.get("senha_atual")
+    senha_nova = dados.get("senha_nova")
+
+    chave = ("senha", g.usuario["id_usuario"])
+    if bloqueado(chave, 8):
+        return erro("Muitas tentativas erradas. Aguarde alguns minutos e tente de novo", 429)
+    if not isinstance(senha_atual, str) or not check_password_hash(g.usuario["senha_hash"], senha_atual):
+        registrar_falha(chave)
+        return erro("A senha atual está incorreta", 401)
+    if not senha_valida(senha_nova):
+        return erro("A nova senha precisa ter de 6 a 100 caracteres")
+    if senha_nova == senha_atual:
+        return erro("A nova senha precisa ser diferente da atual")
+
+    db = get_db()
+    with db:
+        db.execute("UPDATE login SET senha_hash = ?, data_troca_senha = ? WHERE id_usuario = ?",
+                   (generate_password_hash(senha_nova), texto_data(agora()), g.usuario["id_usuario"]))
+    FALHAS.pop(chave, None)
+    return jsonify(montar_perfil(db, g.usuario["id_usuario"], privado=True))
+
+
+@app.route("/api/eu", methods=["DELETE"])
+@login_obrigatorio
+def excluir_conta():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    chave = ("excluir", g.usuario["id_usuario"])
+    if bloqueado(chave, 8):
+        return erro("Muitas tentativas erradas. Aguarde alguns minutos e tente de novo", 429)
+
+    nickname = str(dados.get("nickname", "")).strip().lower()
+    senha = dados.get("senha")
+
+    if nickname != g.usuario["nome_login"]:
+        registrar_falha(chave)
+        return erro("O nickname digitado não confere com o da sua conta", 400)
+
+    # conta do Google não tem senha no Quiz: a confirmação é só o nickname
+    if g.usuario["tipo_conta"] == "site":
+        if not isinstance(senha, str) or not check_password_hash(g.usuario["senha_hash"], senha):
+            registrar_falha(chave)
+            return erro("Senha incorreta", 401)
+
+    db = get_db()
+    with db:
+        # o ON DELETE CASCADE apaga login, partidas e emblemas junto
+        db.execute("DELETE FROM usuario WHERE id_usuario = ?", (g.usuario["id_usuario"],))
+        # sem este jogador o ranking muda, então confere os emblemas de Top de novo
+        sincronizar_emblemas_top(db)
+    FALHAS.pop(chave, None)
+    return jsonify({"mensagem": "Conta excluída"})
+
+
+#--------------------------+
+# (API) RANKING
+#--------------------------+
+@app.route("/ranking", methods=["GET"])
+@login_obrigatorio
+def listar_ranking():
+    modo = request.args.get("modo")
+    if modo is not None and modo not in MODOS:
+        return erro("Modo inválido")
+
+    try:
+        limite = max(1, min(int(request.args.get("limite", 100)), 500))
+    except ValueError:
+        return erro("Limite inválido")
+
+    linhas = ranking_melhores(get_db(), modo)[:limite]
+    return jsonify([{
+        "jogador": linha["jogador"],
+        "foto": linha["foto"],
+        "modo": linha["modo"],
+        "acertos": linha["acertos"],
+        "total_perguntas": linha["total_perguntas"],
+        "data_partida": linha["data_partida"]
+    } for linha in linhas])
+
+
+@app.route("/ranking", methods=["POST"])
+@login_obrigatorio
+def salvar_partida():
+    dados = pegar_json()
+    if dados is None:
+        return erro("Envie os dados em JSON")
+
+    modo = dados.get("modo")
+    acertos = dados.get("acertos")
+    total = dados.get("total_perguntas")
+
+    if modo not in MODOS:
+        return erro("Modo inválido")
+    for numero in (acertos, total):
+        if not isinstance(numero, int) or isinstance(numero, bool):
+            return erro("Pontuação inválida")
+    if total < 1 or total > 100 or acertos < 0 or acertos > total:
+        return erro("Pontuação inválida")
+
+    db = get_db()
+    with db:
+        # o usuário vem do login (token), não do que o navegador manda
+        db.execute(
+            "INSERT INTO ranking (id_usuario, modo, acertos, total_perguntas, data_partida) VALUES (?, ?, ?, ?, ?)",
+            (g.usuario["id_usuario"], modo, acertos, total, texto_data(agora()))
+        )
+        novos = sincronizar_emblemas_top(db)
+
+    meus = [codigo for (dono, codigo) in novos if dono == g.usuario["id_usuario"]]
+    return jsonify({"mensagem": "Partida salva", "emblemas_novos": meus}), 201
+
+
+iniciar_banco()
 
 
 if __name__ == "__main__":
