@@ -127,7 +127,12 @@ const perguntas = [
 // ==========================================
 // 2. CONFIGURAÇÕES GERAIS
 // ==========================================
-const API_URL = "http://127.0.0.1:5000"; // API Flask do projeto (se estiver desligada, o site usa o modo local)
+// API Flask do projeto (se estiver desligada, o site usa o modo local).
+// Quando o site é aberto pelo próprio Flask (porta 5000, no computador ou pelo celular na mesma rede),
+// a API é o mesmo endereço da página; se abrir o index.html direto, usa o 127.0.0.1.
+const API_URL = (/^https?:$/.test(location.protocol) && location.port === "5000")
+    ? location.origin
+    : "http://127.0.0.1:5000";
 
 const TEMPOS = { facil: 60, normal: 30, dificil: 15 }; // segundos por pergunta
 const NOMES_MODO = { facil: "Fácil", normal: "Normal", dificil: "Difícil" };
@@ -341,12 +346,15 @@ function fecharModal(modal, devolverFoco = true) {
 // "#a=zoom,x,y,proporção": o enquadramento que o usuário escolheu no pop-up de ajuste.
 const REGEX_IMAGEM = /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/;
 const BANNER_ASPECTO = 4;   // largura / altura do banner (o CSS usa o mesmo valor)
+// imagens grandes (GIF de até 10 MB) não vêm dentro do JSON: a API manda o endereço delas
+const REGEX_URL_IMAGEM = /^\/api\/(?:foto|banner)\/[^/?#\s]+(?:\?v=\d+)?$/;
 
 function separarImagem(valor) {
     if (typeof valor !== "string") return null;
     const corte = valor.indexOf("#");
     const src = corte === -1 ? valor : valor.slice(0, corte);
-    if (!REGEX_IMAGEM.test(src)) return null;
+    const ehUrl = REGEX_URL_IMAGEM.test(src);
+    if (!ehUrl && !REGEX_IMAGEM.test(src)) return null;
 
     let ajuste = null;
     const m = corte === -1 ? null : /^a=([\d.]+),([\d.]+),([\d.]+),([\d.]+)$/.exec(valor.slice(corte + 1));
@@ -354,10 +362,12 @@ function separarImagem(valor) {
         ajuste = { z: Number(m[1]), x: Number(m[2]), y: Number(m[3]), r: Number(m[4]) };
         if (!(ajuste.z >= 1 && ajuste.r > 0)) ajuste = null;
     }
-    return { src, ajuste };
+    return { src: ehUrl ? API_URL + src : src, ajuste };
 }
 
 function juntarImagem(src, a) {
+    // endereço de imagem grande volta para o formato curto que a API entende
+    if (src.startsWith(API_URL + "/api/")) src = src.slice(API_URL.length);
     return `${src}#a=${a.z.toFixed(3)},${a.x.toFixed(3)},${a.y.toFixed(3)},${a.r.toFixed(5)}`;
 }
 
@@ -659,7 +669,7 @@ function criarSeletorFoto(container) {
     arquivoInput.accept = "image/png,image/jpeg,image/webp,image/gif";
     arquivoInput.className = "sr-only";
     arquivoInput.tabIndex = -1;
-    const dica = el("small", "dica-campo", "PNG, JPG, WEBP ou GIF animado (GIF de até 250 KB).");
+    const dica = el("small", "dica-campo", "PNG, JPG, WEBP ou GIF animado (GIF de até 10 MB).");
     const erro = el("p", "erro-campo");
     erro.setAttribute("role", "alert");
 
@@ -711,15 +721,15 @@ function criarSeletorFoto(container) {
     };
 }
 
-const LIMITE_GIF = { foto: 250 * 1024, banner: 1024 * 1024 };   // o GIF vai inteiro para o banco
+const LIMITE_IMAGEM = 10 * 1024 * 1024;   // foto e banner (inclusive GIF): 10 MB e nada além disso
 
 function validarArquivoImagem(arquivo, tipo) {
     if (!/^image\/(png|jpe?g|webp|gif)$/.test(arquivo.type)) return "Escolha uma imagem PNG, JPG, WEBP ou GIF.";
-    if (arquivo.size > 8 * 1024 * 1024) return "A imagem é grande demais (máximo de 8 MB).";
-    if (arquivo.type === "image/gif" && arquivo.size > LIMITE_GIF[tipo]) {
-        return tipo === "banner"
-            ? "O GIF do banner pode ter até 1 MB."
-            : "O GIF da foto de perfil pode ter até 250 KB.";
+    if (arquivo.size > LIMITE_IMAGEM) {
+        const quem = tipo === "banner" ? "banner" : "foto de perfil";
+        return arquivo.type === "image/gif"
+            ? `O GIF do ${quem} pode ter até 10 MB.`
+            : `A imagem é grande demais (máximo de 10 MB).`;
     }
     return "";
 }
@@ -1146,6 +1156,63 @@ function estatistica(rotulo, valor, detalhe, extra) {
 }
 
 // monta o perfil (o mesmo para a aba "Perfil" e para o pop-up de outros jogadores)
+// "Últimas partidas": 5 linhas por vez; com mais de 5 partidas aparecem as setinhas de página
+function criarHistorico(p) {
+    const caixa = el("div", "historico");
+    const ul = el("ul", "ultimas");
+    const nav = el("div", "historico-nav");
+    const anterior = el("button", "seta-pagina", "");
+    const proxima = el("button", "seta-pagina", "");
+    const rotulo = el("span", "historico-pagina", "");
+    anterior.type = proxima.type = "button";
+    anterior.setAttribute("aria-label", "Partidas mais recentes");
+    proxima.setAttribute("aria-label", "Partidas mais antigas");
+    anterior.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    proxima.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    nav.append(anterior, rotulo, proxima);
+    caixa.append(ul, nav);
+
+    let pagina = 1;
+    let totalPaginas = 1;
+    let ocupado = false;
+
+    function desenhar(lista) {
+        ul.replaceChildren(...lista.map(u => {
+            const li = el("li");
+            li.append(
+                el("span", "", "Modo " + (NOMES_MODO[u.modo] || u.modo)),
+                el("strong", "", `${u.acertos}/${u.total_perguntas}`),
+                el("small", "", formatarData(u.data_partida))
+            );
+            return li;
+        }));
+        nav.hidden = totalPaginas <= 1;
+        rotulo.textContent = `${pagina} / ${totalPaginas}`;
+        anterior.disabled = ocupado || pagina <= 1;
+        proxima.disabled = ocupado || pagina >= totalPaginas;
+    }
+
+    async function irPara(nova) {
+        ocupado = true;
+        anterior.disabled = proxima.disabled = true;
+        const r = await chamarAPI(`/api/perfil/${encodeURIComponent(p.nickname)}/partidas?pagina=${nova}`);
+        ocupado = false;
+        if (!r.ok) { desenhar(ul.__lista || []); return; }
+        pagina = r.dados.pagina;
+        totalPaginas = r.dados.total_paginas;
+        ul.__lista = r.dados.partidas;
+        desenhar(r.dados.partidas);
+    }
+
+    // o perfil já traz a primeira página; "total_partidas" diz se existem mais
+    totalPaginas = Math.max(1, Math.ceil((p.total_partidas || p.ultimas_partidas.length) / 5));
+    ul.__lista = p.ultimas_partidas.slice(0, 5);
+    desenhar(ul.__lista);
+    anterior.addEventListener("click", () => irPara(pagina - 1));
+    proxima.addEventListener("click", () => irPara(pagina + 1));
+    return caixa;
+}
+
 function renderPerfil(container, p) {
     const topo = el("article", "cartao perfil-cartao");
 
@@ -1210,17 +1277,7 @@ function renderPerfil(container, p) {
 
     if (p.ultimas_partidas && p.ultimas_partidas.length) {
         rank.appendChild(el("h3", "perfil-sub", "Últimas partidas"));
-        const ul = el("ul", "ultimas");
-        p.ultimas_partidas.forEach(u => {
-            const li = el("li");
-            li.append(
-                el("span", "", "Modo " + (NOMES_MODO[u.modo] || u.modo)),
-                el("strong", "", `${u.acertos}/${u.total_perguntas}`),
-                el("small", "", formatarData(u.data_partida))
-            );
-            ul.appendChild(li);
-        });
-        rank.appendChild(ul);
+        rank.appendChild(criarHistorico(p));
     }
 
     // emblemas
@@ -1626,6 +1683,41 @@ function abrirGithub(c) {
 // ==========================================
 // 9. LÓGICA DO QUIZ
 // ==========================================
+// pop-up "Iniciando em..." (3, 2, 1) antes do quiz começar, em qualquer modo.
+// O cronômetro das perguntas só começa depois dele, então ninguém perde tempo.
+let contagemAtiva = false;
+
+function iniciarComContagem(modo) {
+    if (contagemAtiva) return;
+    contagemAtiva = true;
+
+    const modal = $("modalContagem");
+    const numero = $("contagemNumero");
+    let restante = 3;
+
+    function mostrarNumero() {
+        numero.textContent = restante;
+        numero.classList.remove("batida");
+        void numero.offsetWidth;          // reinicia a animação do número
+        numero.classList.add("batida");
+    }
+
+    mostrarNumero();
+    abrirModal(modal);
+
+    const intervalo = setInterval(() => {
+        restante -= 1;
+        if (restante > 0) {
+            mostrarNumero();
+            return;
+        }
+        clearInterval(intervalo);
+        fecharModal(modal, false);
+        contagemAtiva = false;
+        iniciarQuiz(modo);
+    }, 1000);
+}
+
 function iniciarQuiz(modo) {
     modoAtual = modo;
     indiceAtual = 0;
@@ -2032,7 +2124,7 @@ btnModos.forEach(btn => {
             console.warn("O botão de modo precisa de um atributo data-modo no HTML.");
             return;
         }
-        iniciarQuiz(modoEscolhido);
+        iniciarComContagem(modoEscolhido);
     });
 });
 
@@ -2100,6 +2192,7 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+        if (contagemAtiva) return;      // o "Iniciando em..." não fecha
         if (menuAcessibilidade.classList.contains("ativo")) {
             fecharMenuAcessibilidade();
             btnAcessibilidade.focus();
