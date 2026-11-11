@@ -190,14 +190,47 @@ perguntas = [
     }
 ]
 
+# Site pelo próprio Flask: abrir http://127.0.0.1:5000/ já mostra o Quiz (não precisa abrir o index.html).
+# Só estes arquivos são entregues (nunca o app.py, o banco ou a chave secreta).
+PASTA_SITE = os.path.dirname(os.path.abspath(__file__))
+ARQUIVOS_DO_SITE = {
+    "index.html": "text/html; charset=utf-8",
+    "style.css": "text/css; charset=utf-8",
+    "script.js": "text/javascript; charset=utf-8",
+    "favicon.ico": "image/x-icon",
+    "icones/icone-16.png": "image/png",
+    "icones/icone-32.png": "image/png",
+    "icones/icone-48.png": "image/png",
+    "icones/icone-180.png": "image/png",
+    "icones/icone-192.png": "image/png",
+    "icones/icone-512.png": "image/png",
+}
+
+
 @app.route("/", methods=["GET"])
+@app.route("/index.html", methods=["GET"])
 def inicio():
-    return jsonify({
-        "mensagem": "Quiz"
-    })
-    
-    
-    
+    return entregar_arquivo_do_site("index.html")
+
+
+@app.route("/<path:arquivo>", methods=["GET"])
+def arquivo_do_site(arquivo):
+    if arquivo not in ARQUIVOS_DO_SITE:
+        return erro("Não encontrado", 404)
+    return entregar_arquivo_do_site(arquivo)
+
+
+def entregar_arquivo_do_site(arquivo):
+    caminho = os.path.join(PASTA_SITE, arquivo)
+    if not os.path.isfile(caminho):
+        return erro("Arquivo do site não encontrado. Deixe o app.py na mesma pasta do index.html.", 404)
+    with open(caminho, "rb") as f:
+        resposta = app.response_class(f.read(), mimetype=ARQUIVOS_DO_SITE[arquivo].split(";")[0])
+    resposta.headers["Content-Type"] = ARQUIVOS_DO_SITE[arquivo]
+    resposta.headers["Cache-Control"] = "no-cache"      # sempre confere se o arquivo mudou
+    return resposta
+
+
 @app.route("/api/status", methods=["GET"])
 def status():
     return jsonify({
@@ -306,7 +339,8 @@ VALIDADE_SESSAO = 60 * 60 * 24 * 30   # o login vale por 30 dias
 MODOS = ("facil", "normal", "dificil")
 AVATARES_PADRAO = ["侍", "猫", "狐", "龍", "桜", "月", "鬼", "鯉"]   # mesmos do script.js
 
-app.config["MAX_CONTENT_LENGTH"] = 2560 * 1024   # 2,5 MB por requisição (foto + banner, que podem ser GIF)
+app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024   # foto + banner (GIF de até 10 MB cada, em base64)
+LIMITE_JSON_COMUM = 64 * 1024                        # as demais rotas nunca precisam de mais que isso
 
 ESQUEMA = """
 -- Dados de usuários
@@ -443,7 +477,16 @@ def liberar_cors(resposta):
 
 @app.errorhandler(413)
 def arquivo_grande(erro):
-    return jsonify({"erro": "Imagem grande demais. Escolha uma imagem menor."}), 413
+    return jsonify({"erro": "Imagem grande demais. O limite é de 10 MB."}), 413
+
+
+@app.before_request
+def limitar_tamanho_das_rotas():
+    # só o cadastro e a edição de perfil recebem imagens; as outras rotas ficam com um limite pequeno
+    if request.method in ("POST", "PUT") and request.endpoint not in (
+            "cadastrar", "completar_cadastro_google", "atualizar_perfil"):
+        if (request.content_length or 0) > LIMITE_JSON_COMUM:
+            return arquivo_grande(None)
 
 
 def erro(mensagem, codigo=400, **extra):
@@ -523,6 +566,9 @@ def imagem_valida(valor, limite, aceita_padrao=False):
         conteudo = base64.b64decode(achou.group(2), validate=True)
     except (binascii.Error, ValueError):
         return False
+    # o arquivo em si (já decodificado) pode ter no máximo 10 MB
+    if len(conteudo) > LIMITE_IMAGEM_BYTES:
+        return False
     # confere se o começo do arquivo bate com o tipo que a imagem diz ser
     if not conteudo.startswith(ASSINATURAS_IMAGEM[achou.group(1)]):
         return False
@@ -531,10 +577,28 @@ def imagem_valida(valor, limite, aceita_padrao=False):
     return True
 
 
-# tamanhos máximos (em caracteres do base64). A foto vai junto de cada jogador no ranking,
-# então fica menor; o banner só aparece no perfil e pode ser um GIF maior.
-LIMITE_FOTO = 350_000
-LIMITE_BANNER = 1_400_000
+# tamanho máximo de foto e banner: 10 MB (um arquivo de 10 MB vira ~13,4 milhões de caracteres em base64)
+LIMITE_IMAGEM_BYTES = 10 * 1024 * 1024
+LIMITE_FOTO = 14_000_000
+LIMITE_BANNER = 14_000_000
+# imagens maiores que isso (em caracteres) não vão dentro das respostas JSON do ranking/perfil:
+# elas são entregues em /api/foto/<nickname> e /api/banner/<nickname>
+LIMITE_INLINE = 60_000
+PARTIDAS_POR_PAGINA = 5
+
+
+def sql_imagem(coluna):
+    # devolve a imagem pequena inteira; a grande vira '@grande' + o enquadramento (#a=...)
+    return ("CASE WHEN length({c}) > {n} THEN '@grande' || "
+            "CASE WHEN instr({c}, '#') > 0 THEN substr({c}, instr({c}, '#')) ELSE '' END "
+            "ELSE {c} END").format(c=coluna, n=LIMITE_INLINE)
+
+
+def url_imagem(valor, tipo, nickname, versao):
+    # troca o marcador '@grande' pelo endereço da imagem; '?v=' faz o navegador recarregar quando ela muda
+    if isinstance(valor, str) and valor.startswith("@grande"):
+        return "/api/%s/%s?v=%s%s" % (tipo, urllib.parse.quote(nickname), versao, valor[len("@grande"):])
+    return valor
 
 
 def limpar_biografia(texto):
@@ -589,8 +653,12 @@ def login_obrigatorio(funcao):
 
 
 def buscar_usuario(db, id_usuario):
+    # foto e banner grandes não são carregados aqui (ficam em /api/foto e /api/banner)
     return db.execute(
-        "SELECT u.*, l.nome_login, l.senha_hash, l.data_troca_nome, l.data_troca_senha "
+        "SELECT u.id_usuario, u.nome, u.email, u.tipo_conta, u.google_id, u.biografia, u.pronomes, u.data_cadastro, "
+        + sql_imagem("u.foto") + " AS foto, length(u.foto) AS foto_tam, "
+        + sql_imagem("u.banner") + " AS banner, length(u.banner) AS banner_tam, "
+        "l.nome_login, l.senha_hash, l.data_troca_nome, l.data_troca_senha "
         "FROM usuario u JOIN login l ON l.id_usuario = u.id_usuario WHERE u.id_usuario = ?",
         (id_usuario,)
     ).fetchone()
@@ -633,7 +701,8 @@ def ranking_melhores(db, modo=None):
     filtro = "WHERE r.modo = ?" if modo else ""
     parametros = (modo,) if modo else ()
     return db.execute(
-        "SELECT t.id_usuario, l.nome_login AS jogador, u.foto, t.modo, t.acertos, t.total_perguntas, t.data_partida "
+        "SELECT t.id_usuario, l.nome_login AS jogador, " + sql_imagem("u.foto") + " AS foto, length(u.foto) AS foto_tam, "
+        "t.modo, t.acertos, t.total_perguntas, t.data_partida "
         "FROM ("
         "  SELECT r.*, ROW_NUMBER() OVER ("
         "    PARTITION BY r.id_usuario ORDER BY r.acertos DESC, r.data_partida ASC, r.id_ranking ASC"
@@ -705,7 +774,7 @@ def montar_perfil(db, id_usuario, privado=False):
 
     ultimas = [dict(p) for p in db.execute(
         "SELECT modo, acertos, total_perguntas, data_partida FROM ranking WHERE id_usuario = ? "
-        "ORDER BY data_partida DESC, id_ranking DESC LIMIT 5", (id_usuario,))]
+        "ORDER BY data_partida DESC, id_ranking DESC LIMIT ?", (id_usuario, PARTIDAS_POR_PAGINA))]
 
     emblemas = [dict(e) for e in db.execute(
         "SELECT e.codigo, e.nome, e.descricao, ue.data_conquista FROM usuario_emblema ue "
@@ -716,8 +785,8 @@ def montar_perfil(db, id_usuario, privado=False):
         "nickname": usuario["nome_login"],
         "biografia": usuario["biografia"],
         "pronomes": usuario["pronomes"],
-        "foto": usuario["foto"],
-        "banner": usuario["banner"],
+        "foto": url_imagem(usuario["foto"], "foto", usuario["nome_login"], usuario["foto_tam"]),
+        "banner": url_imagem(usuario["banner"], "banner", usuario["nome_login"], usuario["banner_tam"]),
         "tipo_conta": usuario["tipo_conta"],
         "data_cadastro": usuario["data_cadastro"],
         "posicao_geral": posicao,
@@ -986,6 +1055,76 @@ def ver_perfil(nickname):
     return jsonify(montar_perfil(db, linha["id_usuario"]))
 
 
+def imagem_propria(valor, tipo):
+    # ao reajustar uma imagem grande, o site manda o endereço dela (/api/foto/<nick>?v=..#a=...)
+    # em vez de enviar tudo de novo: aqui voltamos a imagem guardada, com o novo enquadramento
+    if not isinstance(valor, str) or not valor.startswith("/api/%s/" % tipo):
+        return None
+    caminho, _, ajuste = valor.partition("#")
+    caminho = caminho.partition("?")[0]
+    if caminho != "/api/%s/%s" % (tipo, urllib.parse.quote(g.usuario["nome_login"])):
+        return None
+    if ajuste and not ajuste_valido(ajuste):
+        return None
+    guardada = get_db().execute(
+        "SELECT %s AS imagem FROM usuario WHERE id_usuario = ?" % tipo,
+        (g.usuario["id_usuario"],)).fetchone()["imagem"]
+    if not guardada or guardada.startswith("preset:"):
+        return None
+    base = guardada.partition("#")[0]
+    return base + ("#" + ajuste if ajuste else "")
+
+
+def entregar_imagem(nickname, coluna):
+    # entrega a foto/banner como imagem de verdade (para o <img>); é o que permite GIFs de até 10 MB
+    # sem pesar o ranking e o perfil. Só o dono da conta escolhe a imagem; o endereço é público como o perfil.
+    linha = get_db().execute(
+        "SELECT u.%s AS imagem FROM usuario u JOIN login l ON l.id_usuario = u.id_usuario "
+        "WHERE l.nome_login = ?" % coluna, (nickname.lower(),)).fetchone()
+    if linha is None or not linha["imagem"] or linha["imagem"].startswith("preset:"):
+        return erro("Imagem não encontrada", 404)
+    achou = re.fullmatch(r"data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/]+={0,2})",
+                         linha["imagem"].partition("#")[0])
+    if not achou:
+        return erro("Imagem não encontrada", 404)
+    resposta = app.response_class(base64.b64decode(achou.group(2)), mimetype="image/" + achou.group(1))
+    resposta.headers["Cache-Control"] = "public, max-age=86400"
+    resposta.headers["X-Content-Type-Options"] = "nosniff"
+    return resposta
+
+
+@app.route("/api/foto/<nickname>", methods=["GET"])
+def foto_do_usuario(nickname):
+    return entregar_imagem(nickname, "foto")
+
+
+@app.route("/api/banner/<nickname>", methods=["GET"])
+def banner_do_usuario(nickname):
+    return entregar_imagem(nickname, "banner")
+
+
+@app.route("/api/perfil/<nickname>/partidas", methods=["GET"])
+@login_obrigatorio
+def partidas_do_usuario(nickname):
+    # histórico de partidas, 5 por página (pagina=1 é a mais recente)
+    db = get_db()
+    linha = db.execute("SELECT id_usuario FROM login WHERE nome_login = ?", (nickname.lower(),)).fetchone()
+    if linha is None:
+        return erro("Usuário não encontrado", 404)
+    try:
+        pagina = max(1, int(request.args.get("pagina", 1)))
+    except ValueError:
+        return erro("Página inválida")
+    total = db.execute("SELECT COUNT(*) AS n FROM ranking WHERE id_usuario = ?", (linha["id_usuario"],)).fetchone()["n"]
+    total_paginas = max(1, -(-total // PARTIDAS_POR_PAGINA))
+    pagina = min(pagina, total_paginas)
+    partidas = [dict(p) for p in db.execute(
+        "SELECT modo, acertos, total_perguntas, data_partida FROM ranking WHERE id_usuario = ? "
+        "ORDER BY data_partida DESC, id_ranking DESC LIMIT ? OFFSET ?",
+        (linha["id_usuario"], PARTIDAS_POR_PAGINA, (pagina - 1) * PARTIDAS_POR_PAGINA))]
+    return jsonify({"partidas": partidas, "pagina": pagina, "total_paginas": total_paginas, "total": total})
+
+
 @app.route("/api/eu", methods=["PUT"])
 @login_obrigatorio
 def atualizar_perfil():
@@ -1014,15 +1153,17 @@ def atualizar_perfil():
         campos["pronomes"] = pronomes
 
     if "foto" in dados:
-        if not imagem_valida(dados["foto"], LIMITE_FOTO, aceita_padrao=True):
+        foto = imagem_propria(dados["foto"], "foto") or dados["foto"]
+        if not imagem_valida(foto, LIMITE_FOTO, aceita_padrao=True):
             return erro("Foto de perfil inválida")
-        campos["foto"] = dados["foto"]
+        campos["foto"] = foto
 
     if "banner" in dados:
-        if dados["banner"] in (None, ""):
+        banner = imagem_propria(dados["banner"], "banner") or dados["banner"]
+        if banner in (None, ""):
             campos["banner"] = None      # remove o banner
-        elif imagem_valida(dados["banner"], LIMITE_BANNER):
-            campos["banner"] = dados["banner"]
+        elif imagem_valida(banner, LIMITE_BANNER):
+            campos["banner"] = banner
         else:
             return erro("Banner inválido")
 
@@ -1158,7 +1299,7 @@ def listar_ranking():
     linhas = ranking_melhores(get_db(), modo)[:limite]
     return jsonify([{
         "jogador": linha["jogador"],
-        "foto": linha["foto"],
+        "foto": url_imagem(linha["foto"], "foto", linha["jogador"], linha["foto_tam"]),
         "modo": linha["modo"],
         "acertos": linha["acertos"],
         "total_perguntas": linha["total_perguntas"],
@@ -1202,4 +1343,7 @@ iniciar_banco()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Para abrir pelo celular na mesma rede Wi-Fi, rode com:  QUIZ_HOST=0.0.0.0 python app.py
+    # (nesse modo o modo de depuração fica desligado, por segurança)
+    host = os.environ.get("QUIZ_HOST", "127.0.0.1")
+    app.run(host=host, port=5000, debug=(host == "127.0.0.1"))
