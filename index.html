@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GennisQuiz - Conhecimentos Gerais de TI</title>
+    <meta name="theme-color" content="#0b0b0b">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="icones/icone-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icones/icone-192.png">
+    <link rel="apple-touch-icon" href="icones/icone-180.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -438,7 +443,7 @@
                 </div>
                 <input type="file" id="inputBanner" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only" tabindex="-1">
             </div>
-            <small class="dica-campo">PNG, JPG, WEBP ou GIF animado (banner de até 1 MB; foto de até 250 KB se for GIF).</small>
+            <small class="dica-campo">PNG, JPG, WEBP ou GIF animado (até 10 MB).</small>
 
             <label class="rotulo-campo" for="editarBio">Biografia <small id="contaBio">0/200</small></label>
             <textarea id="editarBio" maxlength="200" rows="3" placeholder="Conte um pouco sobre você"></textarea>
@@ -501,6 +506,15 @@
                 <button id="btnSenhaSalvar" class="btn-primario">Salvar</button>
                 <button id="btnSenhaCancelar" data-foco>Cancelar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Pop-up "Iniciando em..." (3 segundos) antes de começar o quiz -->
+    <div id="modalContagem" class="modal-fundo" hidden role="alertdialog" aria-modal="true" aria-labelledby="tituloContagem">
+        <div class="modal-caixa cartao modal-contagem">
+            <h2 id="tituloContagem">Iniciando em...</h2>
+            <div id="contagemNumero" class="contagem-numero" aria-live="assertive">3</div>
+            <p class="texto-apoio">Prepare-se! O tempo da primeira pergunta só começa depois da contagem.</p>
         </div>
     </div>
 
