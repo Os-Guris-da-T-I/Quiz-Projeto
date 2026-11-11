@@ -2549,3 +2549,254 @@ input[type="range"] {
         animation: none !important;
     }
 }
+
+
+/* histórico de partidas com setinhas de página (5 linhas por vez) */
+.historico-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.historico-nav[hidden] {
+    display: none;
+}
+
+.historico-pagina {
+    min-width: 3.2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.seta-pagina {
+    display: inline-grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.seta-pagina svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.seta-pagina:hover:not(:disabled) {
+    background: var(--line);
+    transform: scale(1.08);
+}
+
+.seta-pagina:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* pop-up "Iniciando em..." */
+.modal-contagem {
+    max-width: 360px;
+}
+
+.contagem-numero {
+    font-family: var(--fonte-titulo);
+    font-size: 5.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.contagem-numero.batida {
+    animation: batida-contagem 1s ease-out;
+}
+
+@keyframes batida-contagem {
+    0% { transform: scale(1.7); opacity: 0; }
+    25% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contagem-numero.batida { animation: none; }
+}
+
+
+/* =====================================================
+   CELULAR E TABLET (layout compacto e fácil de tocar)
+   ===================================================== */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+@media (max-width: 700px) {
+    .header-acessibilidade {
+        padding: 6px 10px 0;
+    }
+
+    .botao-acessibilidade {
+        min-width: 0;
+        height: 40px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .menu-acessibilidade {
+        top: 52px;
+        right: 10px;
+        left: 10px;
+        min-width: 0;
+    }
+
+    /* logo e usuário na primeira linha, menu numa linha só embaixo (como app de celular) */
+    .topbar {
+        justify-content: space-between;
+        gap: 0.4rem 0.6rem;
+        padding: 0.3rem 0.5rem 0;
+    }
+
+    .marca {
+        order: 1;
+        gap: 0.45rem;
+        min-width: 0;
+    }
+
+    .marca-nome {
+        font-size: 1.05rem;
+        letter-spacing: 0.06em;
+    }
+
+    .chip-usuario {
+        order: 2;
+        padding: 0.2rem 0.7rem 0.2rem 0.25rem;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        max-width: 55%;
+    }
+
+    #chipNome {
+        max-width: 6.5rem;
+    }
+
+    .abas {
+        order: 3;
+        flex-basis: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+    }
+
+    .aba {
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.5rem 0.1rem 0.45rem;
+        min-height: 48px;
+    }
+
+    .aba svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .aba span {
+        font-size: 0.7rem;
+        letter-spacing: 0;
+        white-space: nowrap;
+    }
+
+    .painel {
+        padding-top: 1.1rem;
+    }
+
+    /* campos e botões confortáveis para o dedo; 16px evita o zoom automático do iPhone */
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    button {
+        min-height: 44px;
+    }
+
+    .seta-pagina {
+        width: 2.4rem;
+        height: 2.4rem;
+        min-height: 0;
+    }
+
+    .modal-fundo {
+        padding: 0.6rem;
+    }
+
+    .modal-caixa {
+        padding: 1.4rem 1.1rem;
+    }
+
+    .modal-grande {
+        max-width: 100%;
+    }
+
+    .ultimas li {
+        gap: 0.5rem;
+    }
+
+    .ultimas small {
+        min-width: 0;
+    }
+
+    .contagem-numero {
+        font-size: 4.5rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .marca-nome {
+        font-size: 0.95rem;
+    }
+
+    #chipNome {
+        max-width: 4.5rem;
+    }
+
+    .aba span {
+        font-size: 0.64rem;
+    }
+
+    .container {
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
+    }
+}
+
+/* celular deitado: pouca altura, então o pop-up rola em vez de cortar */
+@media (max-height: 480px) {
+    .modal-fundo {
+        align-items: start;
+    }
+
+    .contagem-numero {
+        font-size: 3.5rem;
+    }
+}
+
+/* o cartão de login nunca pode ficar mais largo que a tela */
+.tela-login {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.login-card {
+    min-width: 0;
+    box-sizing: border-box;
+}
